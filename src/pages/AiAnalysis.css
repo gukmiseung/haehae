@@ -1,165 +1,237 @@
 
-/* 공통 페이지 스타일 */
+/* 공통 페이지 */
 
 .ai-analysis {
   min-height: 100vh;
-  background: #f5f8ff;
-  padding: 70px 20px;
+  background: #ffffff;
+  padding: 64px 24px 80px;
+  color: #243858;
   font-family: Arial, sans-serif;
-  color: #202b42;
 }
 
 .ai-analysis-container {
-  max-width: 1100px;
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
 }
 
-.ai-analysis-label {
-  width: 100%;
-  color: #3867df;
-  font-size: 13px;
+.ai-page-heading {
+  margin-bottom: 28px;
+}
+
+.ai-page-heading h1 {
+  margin: 0 0 10px;
+  font-size: 27px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: -0.6px;
 }
 
-.ai-analysis h1 {
-  width: 100%;
-  font-size: 34px;
+.ai-page-heading p {
   margin: 0;
+  font-size: 13px;
+  color: #7a879b;
+  line-height: 1.7;
 }
 
-.ai-analysis-description {
-  width: 100%;
-  color: #667085;
-  line-height: 1.8;
-  margin: 0 0 15px;
+/* AI 대화 분석 입력 화면 */
+
+.ai-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
 }
 
 .ai-analysis-card {
-  flex: 1 1 0;
   min-width: 0;
-  background: white;
-  border: 1px solid #e4e9f3;
-  border-radius: 16px;
-  padding: 28px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e5eaf2;
+  border-radius: 11px;
 }
 
 .ai-analysis-card h2 {
-  font-size: 19px;
-  margin: 0 0 10px;
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #243858;
 }
 
 .ai-analysis-card p {
-  color: #667085;
-  font-size: 14px;
+  margin: 0 0 16px;
+  color: #7a879b;
+  font-size: 12px;
   line-height: 1.7;
 }
 
 .ai-upload-box {
   display: flex;
-  justify-content: center;
+  min-height: 220px;
+  padding: 20px;
+  flex-direction: column;
   align-items: center;
-  min-height: 180px;
-  margin-top: 20px;
-  border: 2px dashed #b7c8ee;
-  border-radius: 12px;
-  background: #f8faff;
-  color: #3867df;
-  font-weight: 600;
+  justify-content: center;
+  gap: 10px;
+  border: 1.5px solid #bfd0f5;
+  border-radius: 8px;
+  background: #f5f8ff;
+  color: #2f64dc;
   cursor: pointer;
+  text-align: center;
 }
 
-.ai-selected-file {
+.ai-upload-icon {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.ai-upload-box strong {
+  max-width: 100%;
+  font-size: 13px;
   overflow-wrap: anywhere;
+}
+
+.ai-upload-link {
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.ai-upload-box small {
+  color: #8a96a9;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.ai-analysis-card .ai-card-note {
+  margin: 12px 0 0;
+  font-size: 11px;
 }
 
 .ai-analysis-card textarea {
   width: 100%;
-  min-height: 180px;
-  margin-top: 15px;
-  padding: 16px;
-  border: 1px solid #d7deeb;
-  border-radius: 10px;
+  min-height: 220px;
+  padding: 14px;
+  border: 1px solid #dce4f0;
+  border-radius: 8px;
+  background: white;
+  color: #243858;
   font: inherit;
+  font-size: 13px;
+  line-height: 1.7;
   resize: vertical;
 }
 
 .ai-analysis-card textarea:focus {
-  outline: 2px solid #3867df;
+  outline: 2px solid #3973e5;
+  outline-offset: 1px;
+}
+
+.ai-example {
+  margin-top: 14px;
+}
+
+.ai-example strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.ai-example p {
+  margin: 0;
+  padding: 12px;
+  border-radius: 7px;
+  background: #f5f8ff;
+  font-size: 12px;
 }
 
 .ai-analyze-button {
-  width: 100%;
-  padding: 17px;
-  border: none;
-  border-radius: 10px;
-  background: #3867df;
-  color: white;
-  font-size: 16px;
+  display: block;
+  margin-top: 14px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 7px;
+  background: #3269df;
+  color: #ffffff;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
 }
 
 .ai-analyze-button:hover {
-  background: #2854c4;
+  background: #2455bd;
 }
 
 .ai-analysis-notice {
-  width: 100%;
-  text-align: center;
-  color: #7b8496;
-  font-size: 12px;
-  margin: 0;
+  margin-top: 25px;
+  color: #8a96a9;
+  font-size: 11px;
 }
 
-/* AI 분석 결과 페이지 */
+/* AI 분석 결과 화면 */
 
-.result-layout,
-.guide-layout {
+.ai-analysis-label {
   display: block;
+  margin-bottom: 12px;
+  color: #3269df;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.result-layout .ai-analysis-card,
-.guide-layout .ai-analysis-card {
-  margin-bottom: 20px;
+.result-layout h1,
+.guide-layout h1 {
+  margin: 0 0 8px;
+  font-size: 27px;
 }
 
 .result-layout .ai-analysis-description,
 .guide-layout .ai-analysis-description {
-  margin: 15px 0 30px;
+  margin: 0 0 24px;
+  color: #7a879b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.result-layout .ai-analysis-card,
+.guide-layout .ai-analysis-card {
+  margin-bottom: 16px;
 }
 
 .risk-level {
   display: inline-block;
-  background: #fee2e2;
-  color: #b91c1c;
-  padding: 10px 24px;
+  margin: 6px 0 14px;
+  padding: 8px 18px;
   border-radius: 30px;
-  font-weight: bold;
-  margin: 12px 0;
+  background: #fee8e8;
+  color: #c43737;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .risk-signal {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5eaf2;
 }
 
 .risk-signal:last-child {
-  border-bottom: none;
+  border-bottom: 0;
 }
 
 .risk-signal h3 {
-  font-size: 16px;
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.risk-signal p {
+  margin-bottom: 10px;
 }
 
 .risk-signal blockquote {
-  margin: 12px 0;
-  padding: 12px;
+  margin: 0;
+  padding: 14px;
+  border-left: 3px solid #e85b5b;
   background: #fff5f5;
-  border-left: 3px solid #ef4444;
+  font-size: 13px;
 }
 
 .ai-page-actions {
@@ -169,11 +241,13 @@
 
 .ai-page-actions button,
 .guide-layout .ai-analysis-card button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  background: #3867df;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 7px;
+  background: #3269df;
   color: white;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -181,12 +255,12 @@
   flex: 1;
 }
 
-/* 안전 대응 안내 페이지 */
+/* 안전 대응 안내 화면 */
 
 .recommended-reply {
-  padding: 18px;
-  background: #f0f5ff;
-  border-radius: 10px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #f3f7ff;
 }
 
 .safety-check {
@@ -194,12 +268,13 @@
   align-items: center;
   gap: 12px;
   padding: 12px 0;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .safety-check input {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
   flex-shrink: 0;
 }
 
@@ -207,16 +282,21 @@
 
 @media (max-width: 700px) {
   .ai-analysis {
-    padding: 40px 16px;
+    padding: 36px 16px 60px;
   }
 
-  .ai-analysis h1 {
-    font-size: 27px;
+  .ai-page-heading h1,
+  .result-layout h1,
+  .guide-layout h1 {
+    font-size: 23px;
+  }
+
+  .ai-input-grid {
+    grid-template-columns: 1fr;
   }
 
   .ai-analysis-card {
-    flex: 1 1 100%;
-    padding: 20px;
+    padding: 18px;
   }
 
   .ai-page-actions {

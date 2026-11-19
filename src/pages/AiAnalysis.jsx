@@ -25,77 +25,74 @@ function AiAnalysis({ onNext }) {
       return
     }
 
-    // 실제 AI API 연결 전에는 예시 결과 페이지로 이동
     onNext()
   }
 
   return (
     <main className="ai-analysis">
       <div className="ai-analysis-container">
-        <span className="ai-analysis-label">
-          SAFE GUARD AI
-        </span>
-
-        <h1>AI 대화 분석</h1>
-
-        <p className="ai-analysis-description">
-          의심스러운 대화 내용을 입력하거나 대화 스크린샷을
-          업로드해 주세요.
-          <br />
-          AI가 피싱 사기 위험 신호를 분석합니다.
-        </p>
-
-        <section className="ai-analysis-card">
-          <h2>대화 스크린샷 업로드</h2>
-
+        <div className="ai-page-heading">
+          <h1>의심스러운 대화를 분석해 보세요</h1>
           <p>
-            카카오톡, 문자 등의 대화 이미지를 업로드하세요.
+            문자나 메신저 대화 내용을 입력하거나 캡처 파일을 선택해
+            사기 위험 신호를 살펴보세요.
           </p>
+        </div>
 
-          <label className="ai-upload-box">
-            <span>+ 이미지 선택하기</span>
+        <div className="ai-input-grid">
+          <section className="ai-analysis-card">
+            <h2>대화 캡처 업로드</h2>
+            <p>카카오톡·문자 대화 화면을 이미지로 첨부해 주세요.</p>
 
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              hidden
-            />
-          </label>
+            <label className="ai-upload-box">
+              <span className="ai-upload-icon">▧</span>
+              <strong>
+                {image ? image.name : '이미지를 끌어다 놓거나'}
+              </strong>
+              <span className="ai-upload-link">파일 선택</span>
+              <small>PNG, JPG 파일 · 개인정보는 가린 뒤 업로드해 주세요.</small>
 
-          {image && (
-            <p className="ai-selected-file">
-              선택한 파일: {image.name}
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={handleImageChange}
+                hidden
+              />
+            </label>
+
+            <p className="ai-card-note">
+              이미지 속 이름·전화번호·계좌번호 등 개인정보를 가리는 것을 권장합니다.
             </p>
-          )}
-        </section>
+          </section>
 
-        <section className="ai-analysis-card">
-          <h2>대화 내용 직접 입력</h2>
+          <section className="ai-analysis-card">
+            <h2>대화 내용 직접 입력</h2>
+            <p>대화 내용을 복사해 붙여넣을 수 있어요.</p>
 
-          <p>
-            분석하고 싶은 대화를 입력할 수도 있습니다.
-          </p>
+            <textarea
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+              placeholder="대화 내용을 이곳에 붙여넣어 주세요."
+              rows={7}
+            />
 
-          <textarea
-            value={message}
-            onChange={(event) => setMessage(event.target.value)}
-            placeholder="예: 지금 바로 송금하지 않으면 계정이 정지됩니다."
-            rows={7}
-          />
-        </section>
+            <div className="ai-example">
+              <strong>입력 예시</strong>
+              <p>“안전 계좌로 먼저 이체해 주시면 확인 후 환불해 드립니다.”</p>
+            </div>
 
-        <button
-          type="button"
-          className="ai-analyze-button"
-          onClick={handleAnalyze}
-        >
-          AI 위험 분석 시작
-        </button>
+            <button
+              className="ai-analyze-button"
+              type="button"
+              onClick={handleAnalyze}
+            >
+              AI 위험 분석하기
+            </button>
+          </section>
+        </div>
 
         <p className="ai-analysis-notice">
-          AI 분석 결과는 참고용이며,
-          사기 여부를 확정하지 않습니다.
+          * 현재는 화면 테스트용 예시 결과가 표시됩니다. 실제 AI 분석은 연결 전입니다.
         </p>
       </div>
     </main>

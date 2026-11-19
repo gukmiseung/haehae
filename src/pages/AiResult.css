@@ -1,0 +1,133 @@
+
+.ai-result-breadcrumb {
+  margin: 0 0 24px;
+  font-size: 11px;
+  color: #8b99ac;
+}
+
+.ai-result-summary {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ai-result-summary .ai-analysis-card {
+  margin-bottom: 0;
+}
+
+.ai-result-main-summary h2 {
+  margin: 14px 0 10px;
+  font-size: 18px;
+}
+
+.ai-result-tag {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #eef3ff;
+  color: #3269df;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ai-result-warning {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #b96a19;
+}
+
+.ai-result-count {
+  margin: 15px 0;
+  color: #3269df;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.ai-result-count-card small {
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.ai-result-section {
+  margin-bottom: 16px;
+}
+
+.ai-result-quote {
+  padding: 18px;
+  border: 1px solid #f5dfb9;
+  border-radius: 9px;
+  background: #fff9ef;
+}
+
+.ai-result-quote strong {
+  display: block;
+  margin: 12px 0;
+  color: #243858;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.ai-result-section h3 {
+  margin: 20px 0 10px;
+  font-size: 13px;
+}
+
+.ai-result-reasons {
+  padding-left: 20px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 2;
+}
+
+.ai-result-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ai-result-timeline-item {
+  flex: 1 1 180px;
+  padding: 14px;
+  border-radius: 9px;
+  background: #f5f8ff;
+}
+
+.ai-result-timeline-step {
+  display: inline-block;
+  color: #3269df;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ai-result-timeline-item p {
+  margin: 10px 0 0;
+}
+
+.ai-result-caption {
+  margin-top: 14px !important;
+  font-size: 11px !important;
+}
+
+.ai-result-back {
+  display: block;
+  margin-top: 12px;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .ai-result-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-result-timeline {
+    flex-direction: column;
+  }
+}
