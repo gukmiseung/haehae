@@ -1,0 +1,123 @@
+
+.sg-header {
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #edf1f7;
+}
+
+.sg-header-inner {
+  max-width: 1120px;
+  min-height: 76px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.sg-header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #243b61;
+  font-size: 20px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sg-header-shield {
+  width: 29px;
+  height: 33px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #4c70ef;
+  color: #ffffff;
+  font-size: 19px;
+  font-weight: 800;
+  clip-path: polygon(50% 0%, 94% 18%, 90% 70%, 50% 100%, 10% 70%, 6% 18%);
+}
+
+.sg-header-nav,
+.sg-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.sg-header-nav button,
+.sg-header-login,
+.sg-header-back {
+  border: none;
+  background: transparent;
+  color: #667892;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sg-header-nav button:hover,
+.sg-header-login:hover,
+.sg-header-back:hover {
+  color: #3473db;
+}
+
+.sg-header-signup {
+  border: none;
+  border-radius: 8px;
+  background: #3473db;
+  color: #ffffff;
+  padding: 12px 19px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sg-header-signup:hover {
+  background: #285fc0;
+}
+
+@media (max-width: 760px) {
+  .sg-header-inner {
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .sg-header-logo {
+    font-size: 17px;
+  }
+
+  .sg-header-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .sg-header-nav button,
+  .sg-header-login,
+  .sg-header-back {
+    font-size: 12px;
+  }
+
+  .sg-header-actions {
+    gap: 12px;
+  }
+
+  .sg-header-signup {
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sg-header-nav {
+    gap: 12px;
+  }
+}

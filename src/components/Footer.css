@@ -1,0 +1,31 @@
+
+.sg-footer {
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid #edf1f7;
+  padding: 22px 32px;
+}
+
+.sg-footer-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  color: #8290a7;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .sg-footer {
+    padding: 20px;
+  }
+
+  .sg-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

@@ -1,0 +1,242 @@
+
+import { useState } from 'react'
+import './RiskLookup.css'
+
+const lookupTypes = {
+  url: {
+    label: 'URL 조회',
+    title: '의심스러운 URL을 확인하세요',
+    description: '문자나 메신저로 받은 링크가 의심된다면 주소를 입력해 주세요.',
+    placeholder: 'https://example.com',
+    inputLabel: 'URL 주소',
+  },
+  account: {
+    label: '계좌번호 조회',
+    title: '의심스러운 계좌번호를 확인하세요',
+    description: '송금하기 전, 상대방의 계좌번호를 확인해 보세요.',
+    placeholder: '계좌번호를 입력해 주세요.',
+    inputLabel: '계좌번호',
+  },
+  phone: {
+    label: '전화번호 조회',
+    title: '의심스러운 전화번호를 확인하세요',
+    description: '모르는 번호로 연락이 왔다면 전화번호를 확인해 보세요.',
+    placeholder: '010-1234-5678',
+    inputLabel: '전화번호',
+  },
+}
+
+function RiskLookup({ onNavigate }) {
+  const [type, setType] = useState('url')
+  const [values, setValues] = useState({
+    url: '',
+    account: '',
+    phone: '',
+  })
+  const [result, setResult] = useState(null)
+
+  const current = lookupTypes[type]
+
+  const handleTypeChange = (nextType) => {
+    setType(nextType)
+    setResult(null)
+  }
+
+  const handleSearch = (event) => {
+    event.preventDefault()
+
+    const value = values[type].trim()
+
+    if (!value) {
+      setResult({
+        status: 'error',
+        message: `${current.inputLabel}를 입력해 주세요.`,
+      })
+      return
+    }
+
+    if (type === 'url') {
+      try {
+        const parsed = new URL(value)
+
+        if (!['http:', 'https:'].includes(parsed.protocol)) {
+          throw new Error('Invalid protocol')
+        }
+      } catch {
+        setResult({
+          status: 'error',
+          message: 'http:// 또는 https://로 시작하는 올바른 URL을 입력해 주세요.',
+        })
+        return
+      }
+    }
+
+    if (type === 'phone' && !/^[0-9+\-\s()]{8,20}$/.test(value)) {
+      setResult({
+        status: 'error',
+        message: '전화번호 형식을 확인해 주세요.',
+      })
+      return
+    }
+
+    if (type === 'account' && !/^[0-9-\s]{6,30}$/.test(value)) {
+      setResult({
+        status: 'error',
+        message: '계좌번호는 숫자와 하이픈(-)으로 입력해 주세요.',
+      })
+      return
+    }
+
+    setResult({
+      status: 'pending',
+      type: current.inputLabel,
+      value,
+    })
+  }
+
+  return (
+    <main className="sg-risk-page">
+      <div className="sg-risk-container">
+        <div className="sg-risk-heading">
+          <span className="sg-risk-eyebrow">RISK LOOKUP</span>
+          <h1>통합 위험 정보 조회</h1>
+          <p>
+            의심스러운 URL, 계좌번호, 전화번호를 확인하고
+            피싱 피해를 예방하세요.
+          </p>
+        </div>
+
+        <section className="sg-risk-panel">
+          <div className="sg-risk-tabs" role="tablist" aria-label="조회 유형">
+            {Object.entries(lookupTypes).map(([key, item]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={type === key}
+                className={`sg-risk-tab ${type === key ? 'active' : ''}`}
+                onClick={() => handleTypeChange(key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="sg-risk-form-content">
+            <div className="sg-risk-form-heading">
+              <div className="sg-risk-form-icon" aria-hidden="true">
+                {type === 'url' ? '↗' : type === 'account' ? '₩' : '☎'}
+              </div>
+              <h2>{current.title}</h2>
+              <p>{current.description}</p>
+            </div>
+
+            <form onSubmit={handleSearch}>
+              <label htmlFor="sg-risk-input">{current.inputLabel}</label>
+
+              <div className="sg-risk-input-row">
+                <input
+                  id="sg-risk-input"
+                  type="text"
+                  placeholder={current.placeholder}
+                  value={values[type]}
+                  onChange={(event) => {
+                    setValues((previous) => ({
+                      ...previous,
+                      [type]: event.target.value,
+                    }))
+                    setResult(null)
+                  }}
+                />
+                <button type="submit">위험 정보 조회</button>
+              </div>
+            </form>
+
+            <p className="sg-risk-form-hint">
+              조회 결과는 참고용이며, 실제 안전 여부를 보장하지 않습니다.
+            </p>
+          </div>
+        </section>
+
+        {result && (
+          <section
+            className={`sg-risk-result sg-risk-result-${result.status}`}
+            aria-live="polite"
+          >
+            {result.status === 'error' ? (
+              <p>{result.message}</p>
+            ) : (
+              <>
+                <div className="sg-risk-result-title">
+                  <span className="sg-risk-result-symbol">!</span>
+                  <h2>위험 정보 조회 준비 중</h2>
+                </div>
+
+                <div className="sg-risk-result-detail">
+                  <span>{result.type}</span>
+                  <strong>{result.value}</strong>
+                </div>
+
+                <p>
+                  입력한 정보의 형식을 확인했습니다.
+                  실제 위험 정보 조회는 백엔드 API 연결 후 제공됩니다.
+                </p>
+
+                <p className="sg-risk-result-warning">
+                  아직 위험 여부를 확인하지 않았으므로
+                  안전한 정보라고 판단해서는 안 됩니다.
+                </p>
+              </>
+            )}
+          </section>
+        )}
+
+        <section className="sg-risk-information">
+          <h2>피싱 피해를 예방하는 방법</h2>
+
+          <div className="sg-risk-info-grid">
+            <article className="sg-risk-info-card">
+              <span className="sg-risk-info-number">01</span>
+              <h3>의심스러운 링크 주의</h3>
+              <p>
+                출처가 불분명한 문자나 메신저의 링크는
+                바로 클릭하지 마세요.
+              </p>
+            </article>
+
+            <article className="sg-risk-info-card">
+              <span className="sg-risk-info-number">02</span>
+              <h3>송금 전 상대방 확인</h3>
+              <p>
+                계좌번호를 전달받았다면 공식 연락처 등
+                별도의 경로로 상대방을 확인하세요.
+              </p>
+            </article>
+
+            <article className="sg-risk-info-card">
+              <span className="sg-risk-info-number">03</span>
+              <h3>개인정보 제공 주의</h3>
+              <p>
+                비밀번호, 인증번호, 금융정보를 요구하는
+                연락에는 신중하게 대응하세요.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section className="sg-risk-bottom">
+          <div>
+            <h2>의심스러운 대화도 받으셨나요?</h2>
+            <p>AI 대화 분석 화면에서 내용을 확인해 보세요.</p>
+          </div>
+
+          <button type="button" onClick={() => onNavigate?.('analysis')}>
+            AI 대화 분석하기 →
+          </button>
+        </section>
+      </div>
+    </main>
+  )
+}
+
+export default RiskLookup
