@@ -27,6 +27,7 @@ function Login({ onNavigate }) {
           <span className="sg-login-brand-icon">✓</span>
           <strong>SAFE GUARD</strong>
         </div>
+
         <h2>내 계정을 안전하게 관리하세요</h2>
         <p>AI 기반 피싱 예방 서비스 SAFE GUARD</p>
 
@@ -35,6 +36,15 @@ function Login({ onNavigate }) {
           <p className="sg-login-subtitle">
             SAFE GUARD에 오신 것을 환영합니다.
           </p>
+
+          <div className="sg-login-guest-notice">
+            <strong>
+              검사 결과를 저장하고 다시 보려면 로그인해 주세요.
+            </strong>
+            <p>
+              메시지 검사는 로그인 없이 이용할 수 있어요.
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit}>
             <label htmlFor="login-email">이메일</label>
@@ -66,21 +76,40 @@ function Login({ onNavigate }) {
                 />
                 로그인 상태 유지
               </label>
+
               <button
                 type="button"
                 className="sg-login-link"
-                onClick={() => setError('비밀번호 찾기는 추후 지원 예정입니다.')}
+                onClick={() =>
+                  setError('비밀번호 찾기는 추후 지원 예정입니다.')
+                }
               >
                 비밀번호를 잊으셨나요?
               </button>
             </div>
 
-            {error && <p className="sg-login-error" role="status">{error}</p>}
+            {error && (
+              <p className="sg-login-error" role="status">
+                {error}
+              </p>
+            )}
 
             <button type="submit" className="sg-login-submit">
               로그인
             </button>
           </form>
+
+          <div className="sg-login-divider">
+            <span>또는</span>
+          </div>
+
+          <button
+            type="button"
+            className="sg-login-guest-button"
+            onClick={() => onNavigate?.('analysis')}
+          >
+            비회원으로 메시지 검사하기
+          </button>
 
           <p className="sg-login-signup-text">
             아직 회원이 아니신가요?

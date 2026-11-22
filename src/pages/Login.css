@@ -10,7 +10,7 @@
 
 .sg-login-content {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   text-align: center;
   color: #243b61;
 }
@@ -64,6 +64,30 @@
   font-size: 12px;
 }
 
+/* 비회원 이용 안내 */
+.sg-login-guest-notice {
+  margin-bottom: 23px;
+  padding: 15px 16px;
+  border: 1px solid #dce8ff;
+  border-radius: 9px;
+  background: #f1f6ff;
+}
+
+.sg-login-guest-notice strong {
+  display: block;
+  color: #2d4f91;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.sg-login-guest-notice p {
+  margin: 6px 0 0;
+  color: #7186ad;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* 로그인 입력 영역 */
 .sg-login-card form {
   display: flex;
   flex-direction: column;
@@ -148,11 +172,50 @@
   font-size: 12px;
 }
 
+/* 로그인과 비회원 이용 구분선 */
+.sg-login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #a2afc0;
+  font-size: 11px;
+}
+
+.sg-login-divider::before,
+.sg-login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e6ebf3;
+}
+
+/* 비회원 메시지 검사 버튼 */
+.sg-login-guest-button {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #b9cdf5;
+  border-radius: 6px;
+  background: #fff;
+  color: #3473db;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.sg-login-guest-button:hover {
+  background: #f1f6ff;
+  border-color: #3473db;
+}
+
+/* 회원가입 */
 .sg-login-signup-text {
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin: 18px 0 0;
+  margin: 20px 0 0;
   color: #8190a8;
   font-size: 12px;
 }
@@ -164,6 +227,7 @@
   line-height: 1.7;
 }
 
+/* 모바일 */
 @media (max-width: 480px) {
   .sg-login-page {
     padding: 45px 16px 65px;
@@ -171,5 +235,9 @@
 
   .sg-login-card {
     padding: 24px 20px;
+  }
+
+  .sg-login-options {
+    align-items: flex-start;
   }
 }

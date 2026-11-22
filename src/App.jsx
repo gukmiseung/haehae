@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import AiAnalysis from './pages/AiAnalysis'
 import AiResult from './pages/AiResult'
 import SafetyGuide from './pages/SafetyGuide'
+import LatestScamGuide from './pages/LatestScamGuide'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import RiskLookup from './pages/RiskLookup'
@@ -13,6 +14,11 @@ import Footer from './components/Footer'
 function App() {
   const [page, setPage] = useState('home')
   const [riskType, setRiskType] = useState('url')
+  const [analysisData, setAnalysisData] = useState({
+    message: '',
+    imagePreview: '',
+    imageName: '',
+  })
 
   const navigate = (nextPage, options = {}) => {
     if (nextPage === 'risk') {
@@ -47,12 +53,16 @@ function App() {
   } else if (page === 'analysis') {
     content = (
       <AiAnalysis
-        onNext={() => navigate('result')}
+        onNext={(data) => {
+          setAnalysisData(data)
+          navigate('result')
+        }}
       />
     )
   } else if (page === 'result') {
     content = (
       <AiResult
+        analysisData={analysisData}
         onBack={() => navigate('analysis')}
         onNext={() => navigate('guide')}
       />
@@ -61,6 +71,12 @@ function App() {
     content = (
       <SafetyGuide
         onBack={() => navigate('result')}
+      />
+    )
+  } else if (page === 'latestScams') {
+    content = (
+      <LatestScamGuide
+        onNavigate={navigate}
       />
     )
   } else {
@@ -73,6 +89,7 @@ function App() {
     <>
       <Header
         variant={isAuthPage ? 'auth' : 'default'}
+        activePage={page}
         onNavigate={navigate}
       />
       {content}
