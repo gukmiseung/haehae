@@ -1,0 +1,282 @@
+
+.sg-scam-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(24, 39, 62, 0.53);
+}
+
+.sg-scam-popup {
+  width: 100%;
+  max-width: 585px;
+  padding: 29px 33px 25px;
+  border: 1px solid #e3eaf5;
+  border-radius: 21px;
+  background: #ffffff;
+  box-shadow: 0 15px 50px rgba(20, 39, 70, 0.18);
+  color: #243b61;
+  animation: sg-scam-popup-appear 0.2s ease-out;
+}
+
+@keyframes sg-scam-popup-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.sg-scam-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 27px;
+  margin-bottom: 23px;
+}
+
+.sg-scam-popup-header > span {
+  color: #4169c9;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sg-scam-popup-close {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #91a0b5;
+  font-size: 29px;
+  font-weight: 300;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sg-scam-popup-close:hover {
+  color: #243b61;
+}
+
+.sg-scam-popup-shield {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 82px;
+  margin-bottom: 17px;
+  color: #506fe0;
+}
+
+.sg-scam-popup-shield svg {
+  width: 49px;
+  height: 54px;
+}
+
+.sg-scam-popup-intro {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.sg-scam-popup-intro h2 {
+  margin: 0 0 11px;
+  color: #263d61;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+  line-height: 1.4;
+}
+
+.sg-scam-popup-intro p {
+  margin: 0;
+  color: #71819b;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.sg-scam-popup-warning {
+  padding: 17px 21px;
+  margin-bottom: 21px;
+  border: 1px solid #f3e3c7;
+  border-radius: 9px;
+  background: #fff9ef;
+}
+
+.sg-scam-popup-warning strong {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #344968;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.sg-scam-popup-warning strong span {
+  color: #ed9a24;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.sg-scam-popup-warning p {
+  margin: 12px 0 0;
+  color: #8190a8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sg-scam-popup-slider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 37px;
+  margin-bottom: 21px;
+}
+
+.sg-scam-popup-slider > button {
+  width: 25px;
+  height: 35px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #60718d;
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sg-scam-popup-slider > button:hover {
+  color: #4169e1;
+}
+
+.sg-scam-popup-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sg-scam-popup-dots button {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #cbd5e3;
+  cursor: pointer;
+}
+
+.sg-scam-popup-dots button.active {
+  background: #506fe0;
+}
+
+.sg-scam-popup-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 51px;
+  margin-bottom: 22px;
+  border: 0;
+  border-radius: 9px;
+  background: #506fe0;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.sg-scam-popup-detail:hover {
+  background: #3f5fce;
+}
+
+.sg-scam-popup-detail span {
+  font-size: 18px;
+}
+
+.sg-scam-popup-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sg-scam-popup-footer label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #8190a8;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sg-scam-popup-footer input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #506fe0;
+  cursor: pointer;
+}
+
+.sg-scam-popup-footer > button {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #71819b;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sg-scam-popup-footer > button:hover {
+  color: #243b61;
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .sg-scam-popup {
+    max-width: 430px;
+    padding: 23px 20px 20px;
+    border-radius: 17px;
+  }
+
+  .sg-scam-popup-header {
+    margin-bottom: 16px;
+  }
+
+  .sg-scam-popup-shield {
+    height: 65px;
+    margin-bottom: 12px;
+  }
+
+  .sg-scam-popup-intro h2 {
+    font-size: 20px;
+  }
+
+  .sg-scam-popup-intro p {
+    font-size: 12px;
+  }
+
+  .sg-scam-popup-warning {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .sg-scam-popup-warning strong {
+    font-size: 12px;
+  }
+
+  .sg-scam-popup-warning p {
+    font-size: 11px;
+  }
+
+  .sg-scam-popup-detail {
+    min-height: 47px;
+    font-size: 13px;
+  }
+}
