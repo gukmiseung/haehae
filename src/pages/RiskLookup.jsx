@@ -13,7 +13,7 @@ const lookupTypes = {
   account: {
     label: '계좌번호 조회',
     title: '의심스러운 계좌번호를 확인하세요',
-    description: '송금하기 전, 상대방의 계좌번호를 확인해 보세요.',
+    description: '송금하기 전, 상대방의 은행과 계좌번호를 확인해 보세요.',
     placeholder: '계좌번호를 입력해 주세요.',
     inputLabel: '계좌번호',
   },
@@ -26,6 +26,32 @@ const lookupTypes = {
   },
 }
 
+const banks = [
+  'KB국민은행',
+  '신한은행',
+  '우리은행',
+  '하나은행',
+  'NH농협은행',
+  'IBK기업은행',
+  'SC제일은행',
+  '한국씨티은행',
+  '카카오뱅크',
+  '케이뱅크',
+  '토스뱅크',
+  '수협은행',
+  'iM뱅크(대구은행)',
+  '부산은행',
+  '경남은행',
+  '광주은행',
+  '전북은행',
+  '제주은행',
+  'KDB산업은행',
+  '우체국',
+  '새마을금고',
+  '신협',
+  '저축은행',
+]
+
 function RiskLookup({ onNavigate, initialType = 'url' }) {
   const validInitialType = lookupTypes[initialType]
     ? initialType
@@ -37,6 +63,7 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
     account: '',
     phone: '',
   })
+  const [selectedBank, setSelectedBank] = useState('')
   const [result, setResult] = useState(null)
 
   useEffect(() => {
@@ -55,6 +82,14 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
     event.preventDefault()
 
     const value = values[type].trim()
+
+    if (type === 'account' && !selectedBank) {
+      setResult({
+        status: 'error',
+        message: '은행을 먼저 선택해 주세요.',
+      })
+      return
+    }
 
     if (!value) {
       setResult({
@@ -100,6 +135,7 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
       status: 'pending',
       type: current.inputLabel,
       value,
+      bank: type === 'account' ? selectedBank : '',
     })
   }
 
@@ -153,6 +189,31 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
             </div>
 
             <form onSubmit={handleSearch}>
+              {type === 'account' && (
+                <div className="sg-risk-bank-field">
+                  <label htmlFor="sg-risk-bank">
+                    은행 선택
+                  </label>
+
+                  <select
+                    id="sg-risk-bank"
+                    value={selectedBank}
+                    onChange={(event) => {
+                      setSelectedBank(event.target.value)
+                      setResult(null)
+                    }}
+                  >
+                    <option value="">은행을 선택해 주세요.</option>
+
+                    {banks.map((bank) => (
+                      <option key={bank} value={bank}>
+                        {bank}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <label htmlFor="sg-risk-input">
                 {current.inputLabel}
               </label>
@@ -202,6 +263,11 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
 
                 <div className="sg-risk-result-detail">
                   <span>{result.type}</span>
+
+                  {result.bank && (
+                    <strong>은행: {result.bank}</strong>
+                  )}
+
                   <strong>{result.value}</strong>
                 </div>
 
@@ -218,45 +284,6 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
             )}
           </section>
         )}
-
-        <section className="sg-risk-information">
-          <h2>피싱 피해를 예방하는 방법</h2>
-
-          <div className="sg-risk-info-grid">
-            <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">
-                01
-              </span>
-              <h3>의심스러운 링크 주의</h3>
-              <p>
-                출처가 불분명한 문자나 메신저의 링크는
-                바로 클릭하지 마세요.
-              </p>
-            </article>
-
-            <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">
-                02
-              </span>
-              <h3>송금 전 상대방 확인</h3>
-              <p>
-                계좌번호를 전달받았다면 공식 연락처 등
-                별도의 경로로 상대방을 확인하세요.
-              </p>
-            </article>
-
-            <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">
-                03
-              </span>
-              <h3>개인정보 제공 주의</h3>
-              <p>
-                비밀번호, 인증번호, 금융정보를 요구하는
-                연락에는 신중하게 대응하세요.
-              </p>
-            </article>
-          </div>
-        </section>
 
         <section className="sg-risk-bottom">
           <div>

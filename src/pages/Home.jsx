@@ -22,24 +22,6 @@ function Home({ onNavigate }) {
               <br />
               AI가 위험 신호를 분석하고 안전한 대응 방법을 알려드려요.
             </p>
-
-            <div className="sg-home-hero-actions">
-              <button
-                type="button"
-                className="sg-home-primary"
-                onClick={() => onNavigate('analysis')}
-              >
-                AI 분석 시작하기
-              </button>
-
-              <button
-                type="button"
-                className="sg-home-secondary"
-                onClick={() => onNavigate('guide')}
-              >
-                서비스 이용 방법
-              </button>
-            </div>
           </div>
 
           <div className="sg-home-hero-visual">
@@ -73,12 +55,12 @@ function Home({ onNavigate }) {
         </div>
       </section>
 
-      <section className="sg-home-services">
+      <section className="sg-home-services" id="services">
         <div className="sg-home-container">
           <div className="sg-home-section-heading">
-            <h2>무엇이 의심스러우신가요?</h2>
+            <h2>어떤 도움이 필요하신가요?</h2>
             <p>
-              확인이 필요한 내용을 선택하고 간편하게 분석해 보세요.
+              필요한 서비스를 선택하고 안전을 확인해 보세요.
             </p>
           </div>
 
@@ -92,38 +74,36 @@ function Home({ onNavigate }) {
               </div>
 
               <p>
-                문자·카카오톡 대화 캡처를
+                문자·카카오톡 대화 내용을
                 <br />
-                업로드하고 위험 표현을 확인해요.
+                AI로 분석하고 위험 신호를 확인해요.
               </p>
 
               <button
                 type="button"
                 onClick={() => onNavigate('analysis')}
               >
-                이미지 업로드 →
+                대화 분석하기 →
               </button>
             </article>
 
             <article className="sg-home-card">
               <div className="sg-home-card-heading">
                 <span className="sg-home-card-icon" aria-hidden="true">
-                  ↗
+                  ⌕
                 </span>
-                <h3>URL 위험 확인</h3>
+                <h3>URL·계좌·전화번호 조회</h3>
               </div>
 
               <p>
-                의심스러운 웹사이트 주소의
+                의심스러운 URL과 계좌번호,
                 <br />
-                위험 징후를 확인해요.
+                전화번호의 위험 여부를 확인해요.
               </p>
 
               <button
                 type="button"
-                onClick={() =>
-                  onNavigate('risk', { type: 'url' })
-                }
+                onClick={() => onNavigate('risk', { type: 'url' })}
               >
                 위험 조회하기 →
               </button>
@@ -132,24 +112,22 @@ function Home({ onNavigate }) {
             <article className="sg-home-card">
               <div className="sg-home-card-heading">
                 <span className="sg-home-card-icon" aria-hidden="true">
-                  ☎
+                  ✓
                 </span>
-                <h3>계좌·전화번호 조회</h3>
+                <h3>피싱 예방·대응 가이드</h3>
               </div>
 
               <p>
-                계좌번호와 전화번호의
+                피싱 예방법부터 의심 상황에서의
                 <br />
-                신고 이력을 확인해요.
+                대처 방법까지 알아봐요.
               </p>
 
               <button
                 type="button"
-                onClick={() =>
-                  onNavigate('risk', { type: 'account' })
-                }
+                onClick={() => onNavigate('guide')}
               >
-                위험 조회하기 →
+                가이드 확인하기 →
               </button>
             </article>
           </div>
@@ -163,31 +141,18 @@ function Home({ onNavigate }) {
 
       <section className="sg-home-safety">
         <div className="sg-home-container">
-          <h2>안전한 디지털 생활을 위한 안내</h2>
+          <h2>피싱 예방을 위한 안전 수칙</h2>
 
           <div className="sg-home-safety-grid">
             <button
               type="button"
               className="sg-home-safety-card"
-              disabled
-              title="준비 중인 기능입니다."
+              onClick={() => onNavigate('latestScams')}
             >
-              <span className="sg-home-safety-tag">정보</span>
+              <span className="sg-home-safety-tag">INFO</span>
               <span className="sg-home-safety-copy">
-                <strong>최신 피싱 수법 알아보기</strong>
-                <small>새로운 사기 유형과 예방 방법</small>
-              </span>
-            </button>
-
-            <button
-              type="button"
-              className="sg-home-safety-card"
-              onClick={() => onNavigate('guide')}
-            >
-              <span className="sg-home-safety-tag">도움</span>
-              <span className="sg-home-safety-copy">
-                <strong>피해가 의심될 때 대처 방법</strong>
-                <small>긴급 연락처와 신고 절차 확인</small>
+                <strong>최신 피싱 수법 확인하기</strong>
+                <small>새로운 사기 유형과 예방 방법 알아보기</small>
               </span>
             </button>
 
@@ -197,10 +162,10 @@ function Home({ onNavigate }) {
               disabled
               title="준비 중인 기능입니다."
             >
-              <span className="sg-home-safety-tag">보호</span>
+              <span className="sg-home-safety-tag">FAMILY</span>
               <span className="sg-home-safety-copy">
                 <strong>가족과 함께 피싱 예방하기</strong>
-                <small>가족 안심 기능 이용 안내</small>
+                <small>가족과 공유하는 안전한 디지털 생활 수칙</small>
               </span>
             </button>
           </div>

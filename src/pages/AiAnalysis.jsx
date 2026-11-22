@@ -1,31 +1,67 @@
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import './AiAnalysis.css'
+
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 function AiAnalysis({ onNext }) {
   const [message, setMessage] = useState('')
-  const [image, setImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState('')
+  const [imageName, setImageName] = useState('')
+  const fileInputRef = useRef(null)
 
   function handleImageChange(event) {
     const file = event.target.files?.[0]
 
     if (!file) return
 
-    if (!file.type.startsWith('image/')) {
-      alert('이미지 파일만 업로드할 수 있습니다.')
+    if (!['image/png', 'image/jpeg'].includes(file.type)) {
+      alert('PNG 또는 JPG 이미지 파일만 업로드할 수 있습니다.')
+      event.target.value = ''
       return
     }
 
-    setImage(file)
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert('이미지는 10MB 이하의 파일만 업로드할 수 있습니다.')
+      event.target.value = ''
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      setImagePreview(reader.result)
+      setImageName(file.name)
+    }
+
+    reader.onerror = () => {
+      alert('이미지를 불러오지 못했습니다. 다시 선택해 주세요.')
+      event.target.value = ''
+    }
+
+    reader.readAsDataURL(file)
+  }
+
+  function handleImageRemove() {
+    setImagePreview('')
+    setImageName('')
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   function handleAnalyze() {
-    if (!message.trim() && !image) {
+    if (!message.trim() && !imagePreview) {
       alert('대화 내용이나 이미지를 입력해 주세요.')
       return
     }
 
-    onNext()
+    onNext({
+      message: message.trim(),
+      imagePreview,
+      imageName,
+    })
   }
 
   return (
@@ -46,13 +82,19 @@ function AiAnalysis({ onNext }) {
 
             <label className="ai-upload-box">
               <span className="ai-upload-icon">▧</span>
+
               <strong>
-                {image ? image.name : '이미지를 끌어다 놓거나'}
+                {imageName || '이미지를 선택해 주세요'}
               </strong>
+
               <span className="ai-upload-link">파일 선택</span>
-              <small>PNG, JPG 파일 · 개인정보는 가린 뒤 업로드해 주세요.</small>
+
+              <small>
+                PNG, JPG 파일 · 최대 10MB
+              </small>
 
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/png,image/jpeg"
                 onChange={handleImageChange}
@@ -60,8 +102,26 @@ function AiAnalysis({ onNext }) {
               />
             </label>
 
+            {imagePreview && (
+              <div className="ai-image-preview">
+                <img
+                  src={imagePreview}
+                  alt="업로드한 대화 캡처 미리보기"
+                />
+
+                <button
+                  type="button"
+                  className="ai-image-remove"
+                  onClick={handleImageRemove}
+                >
+                  이미지 삭제
+                </button>
+              </div>
+            )}
+
             <p className="ai-card-note">
-              이미지 속 이름·전화번호·계좌번호 등 개인정보를 가리는 것을 권장합니다.
+              이미지 속 이름·전화번호·계좌번호 등 개인정보를
+              가린 뒤 업로드하는 것을 권장합니다.
             </p>
           </section>
 
@@ -78,7 +138,9 @@ function AiAnalysis({ onNext }) {
 
             <div className="ai-example">
               <strong>입력 예시</strong>
-              <p>“안전 계좌로 먼저 이체해 주시면 확인 후 환불해 드립니다.”</p>
+              <p>
+                “안전 계좌로 먼저 이체해 주시면 확인 후 환불해 드립니다.”
+              </p>
             </div>
 
             <button
@@ -92,7 +154,8 @@ function AiAnalysis({ onNext }) {
         </div>
 
         <p className="ai-analysis-notice">
-          * 현재는 화면 테스트용 예시 결과가 표시됩니다. 실제 AI 분석은 연결 전입니다.
+          * 현재는 입력 내용 전달 및 화면 테스트 단계입니다.
+          실제 AI 분석 기능은 아직 연결되지 않았습니다.
         </p>
       </div>
     </main>

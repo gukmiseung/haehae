@@ -52,42 +52,6 @@
   line-height: 1.5;
 }
 
-.sg-home-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-
-.sg-home-primary,
-.sg-home-secondary {
-  min-height: 42px;
-  padding: 0 21px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.sg-home-primary {
-  border: 1px solid #3473db;
-  background: #3473db;
-  color: #ffffff;
-}
-
-.sg-home-primary:hover {
-  background: #285fc0;
-}
-
-.sg-home-secondary {
-  border: 1px solid #bcd0fa;
-  background: transparent;
-  color: #4169e1;
-}
-
-.sg-home-secondary:hover {
-  background: #e6efff;
-}
-
 /* 오른쪽 방패 이미지 */
 .sg-home-hero-visual {
   display: flex;
@@ -233,65 +197,84 @@
 
 /* 하단 안전 안내 */
 .sg-home-safety {
-  padding: 23px 0 34px;
+  padding: 30px 0 38px;
   background: #f5f7fd;
 }
 
 .sg-home-safety h2 {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   color: #243b70;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
 }
 
+/* 하단 카드 2개가 전체 너비를 균등하게 차지 */
 .sg-home-safety-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  width: 100%;
 }
 
 .sg-home-safety-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
   min-width: 0;
-  padding: 13px 16px;
+  min-height: 88px;
+  padding: 20px 24px;
   border: 1px solid #dfe7f5;
-  border-radius: 9px;
+  border-radius: 11px;
   background: #ffffff;
   text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sg-home-safety-card:not(:disabled) {
   cursor: pointer;
 }
 
-.sg-home-safety-card:hover {
+.sg-home-safety-card:not(:disabled):hover {
   border-color: #9db9f5;
+  box-shadow: 0 4px 14px rgba(65, 105, 225, 0.08);
+}
+
+.sg-home-safety-card:disabled {
+  cursor: default;
+  opacity: 1;
 }
 
 .sg-home-safety-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  padding: 7px 11px;
+  min-width: 58px;
+  padding: 9px 13px;
   border-radius: 20px;
   background: #eaf0ff;
   color: #4169e1;
   font-size: 11px;
+  font-weight: 600;
 }
 
 .sg-home-safety-copy {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
   min-width: 0;
 }
 
 .sg-home-safety-copy strong {
   color: #243b61;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .sg-home-safety-copy small {
   color: #8190a8;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 /* 태블릿 */
@@ -319,7 +302,12 @@
   }
 
   .sg-home-safety-grid {
-    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sg-home-safety-card {
+    padding: 17px;
+    gap: 12px;
   }
 }
 
@@ -369,6 +357,16 @@
 
   .sg-home-safety {
     padding: 30px 0;
+  }
+
+  .sg-home-safety-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sg-home-safety-card {
+    min-height: 82px;
+    padding: 16px;
   }
 
   .sg-home-disclaimer {
