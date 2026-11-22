@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import Home from './pages/Home'
 import AiAnalysis from './pages/AiAnalysis'
@@ -10,10 +9,13 @@ import Signup from './pages/Signup'
 import RiskLookup from './pages/RiskLookup'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import ScamPopup from './components/ScamPopup'
 
 function App() {
   const [page, setPage] = useState('home')
   const [riskType, setRiskType] = useState('url')
+  const [latestScamId, setLatestScamId] = useState(null)
+
   const [analysisData, setAnalysisData] = useState({
     message: '',
     imagePreview: '',
@@ -29,6 +31,10 @@ function App() {
           ? nextType
           : 'url'
       )
+    }
+
+    if (nextPage === 'latestScams') {
+      setLatestScamId(options.scamId || null)
     }
 
     setPage(nextPage)
@@ -77,6 +83,7 @@ function App() {
     content = (
       <LatestScamGuide
         onNavigate={navigate}
+        initialScamId={latestScamId}
       />
     )
   } else {
@@ -92,7 +99,13 @@ function App() {
         activePage={page}
         onNavigate={navigate}
       />
+
       {content}
+
+      {page === 'home' && (
+        <ScamPopup onNavigate={navigate} />
+      )}
+
       <Footer />
     </>
   )

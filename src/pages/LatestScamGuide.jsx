@@ -1,5 +1,4 @@
-
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './LatestScamGuide.css'
 
 const scamData = [
@@ -119,9 +118,22 @@ const categories = [
   '투자 사기',
 ]
 
-function LatestScamGuide({ onNavigate }) {
+function LatestScamGuide({ onNavigate, initialScamId }) {
   const [selectedCategory, setSelectedCategory] = useState('전체')
-  const [selectedScam, setSelectedScam] = useState(null)
+
+  const [selectedScam, setSelectedScam] = useState(
+    () => scamData.find((scam) => scam.id === initialScamId) || null
+  )
+
+  useEffect(() => {
+    if (initialScamId) {
+      const targetScam = scamData.find(
+        (scam) => scam.id === initialScamId
+      )
+
+      setSelectedScam(targetScam || null)
+    }
+  }, [initialScamId])
 
   const filteredScams =
     selectedCategory === '전체'
@@ -225,7 +237,7 @@ function LatestScamGuide({ onNavigate }) {
           <span className="sg-latest-eyebrow">
             SCAM PREVENTION GUIDE
           </span>
-          <h1>최신 사기수법 가이드</h1>
+          <h1>사기수법 가이드</h1>
           <p>
             다양한 피싱 수법을 알아보고 위험 신호와 예방법을 확인해 보세요.
           </p>
