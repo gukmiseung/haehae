@@ -219,11 +219,60 @@
   background: #285fbd;
 }
 
+.sg-header-mypage-link {
+  padding: 8px 4px;
+  color: #405474;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sg-header-mypage-link:hover {
+  text-decoration: underline;
+}
+
+.sg-header-mypage {
+  height: 73px;
+}
+
+.sg-header-mypage .sg-header-inner {
+  width: min(1156px, calc(100% - 48px));
+}
+
+.sg-header-mypage a {
+  text-decoration: none;
+}
+
+.sg-header-mypage .sg-header-logo {
+  gap: 13px;
+  color: #293754;
+}
+
+.sg-header-diamond {
+  width: 21px;
+  height: 21px;
+  background: #606dd4;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+
 @media (max-width: 650px) {
   .sg-header-signup {
     min-width: 65px;
     height: 34px;
     padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .sg-header-mypage {
+    height: 64px;
+  }
+
+  .sg-header-mypage .sg-header-inner {
+    width: calc(100% - 32px);
+  }
+
+  .sg-header-mypage-link {
     font-size: 12px;
   }
 }

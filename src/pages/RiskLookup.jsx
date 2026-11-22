@@ -52,7 +52,43 @@ const banks = [
   '저축은행',
 ]
 
-function RiskLookup({ onNavigate, initialType = 'url' }) {
+function LookupResult({ result }) {
+  if (!result) return null
+
+  const isExample = result.status === 'example'
+
+  return (
+    <section className={`sg-risk-result sg-risk-result-${result.status}`} aria-live="polite">
+      {result.status === 'error' ? (
+        <p>{result.message}</p>
+      ) : (
+        <>
+          <div className="sg-risk-result-title">
+            <span className="sg-risk-result-symbol" aria-hidden="true">!</span>
+            <h2>{isExample ? result.riskLabel : '위험 정보 조회 준비 중'}</h2>
+          </div>
+
+          <div className="sg-risk-result-detail">
+            <span>{result.type}</span>
+            {result.bank && <strong>은행: {result.bank}</strong>}
+            <strong>{result.value}</strong>
+          </div>
+
+          {isExample ? (
+            <p>가상 조회 기록입니다. 실제 위험 정보는 조회 API 연결 후 제공됩니다.</p>
+          ) : (
+            <>
+              <p>입력한 정보의 형식을 확인했습니다. 실제 위험 정보 조회는 백엔드 API 연결 후 제공됩니다.</p>
+              <p className="sg-risk-result-warning">아직 위험 여부를 확인하지 않았습니다.</p>
+            </>
+          )}
+        </>
+      )}
+    </section>
+  )
+}
+
+function RiskLookup({ onNavigate, initialType = 'url', onRecord, savedRecord }) {
   const validInitialType = lookupTypes[initialType]
     ? initialType
     : 'url'
@@ -131,12 +167,42 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
       return
     }
 
-    setResult({
+    const lookupResult = {
       status: 'pending',
       type: current.inputLabel,
       value,
       bank: type === 'account' ? selectedBank : '',
+    }
+    setResult(lookupResult)
+    onRecord?.({
+      type,
+      title: type === 'url' ? new URL(value).hostname : `•••• ${value.replace(/\D/g, '').slice(-4)}`,
+      lookupResult,
     })
+  }
+
+  if (savedRecord) {
+    const { label, inputLabel } = lookupTypes[savedRecord.type]
+    const savedResult = savedRecord.lookupResult || {
+      status: 'example',
+      type: inputLabel,
+      value: savedRecord.title,
+      riskLabel: savedRecord.risk === 'caution' ? '주의 필요' : '신고 이력 없음',
+    }
+
+    return (
+      <main className="sg-risk-page">
+        <div className="sg-risk-container">
+          <div className="sg-risk-heading">
+            <h1>{label} 결과</h1>
+          </div>
+          <LookupResult result={savedResult} />
+          <div className="sg-risk-bottom">
+            <button type="button" onClick={() => onNavigate('mypage')}>검사 기록으로 돌아가기</button>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -245,45 +311,7 @@ function RiskLookup({ onNavigate, initialType = 'url' }) {
           </div>
         </section>
 
-        {result && (
-          <section
-            className={`sg-risk-result sg-risk-result-${result.status}`}
-            aria-live="polite"
-          >
-            {result.status === 'error' ? (
-              <p>{result.message}</p>
-            ) : (
-              <>
-                <div className="sg-risk-result-title">
-                  <span className="sg-risk-result-symbol">
-                    !
-                  </span>
-                  <h2>위험 정보 조회 준비 중</h2>
-                </div>
-
-                <div className="sg-risk-result-detail">
-                  <span>{result.type}</span>
-
-                  {result.bank && (
-                    <strong>은행: {result.bank}</strong>
-                  )}
-
-                  <strong>{result.value}</strong>
-                </div>
-
-                <p>
-                  입력한 정보의 형식을 확인했습니다.
-                  실제 위험 정보 조회는 백엔드 API 연결 후 제공됩니다.
-                </p>
-
-                <p className="sg-risk-result-warning">
-                  아직 위험 여부를 확인하지 않았으므로
-                  안전한 정보라고 판단해서는 안 됩니다.
-                </p>
-              </>
-            )}
-          </section>
-        )}
+        <LookupResult result={result} />
 
         <section className="sg-risk-bottom">
           <div>

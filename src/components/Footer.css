@@ -18,6 +18,15 @@
   line-height: 1.6;
 }
 
+.sg-footer-mypage {
+  padding: 16px 24px;
+}
+
+.sg-footer-mypage .sg-footer-inner {
+  max-width: 1156px;
+  color: #64718a;
+}
+
 @media (max-width: 640px) {
   .sg-footer {
     padding: 20px;

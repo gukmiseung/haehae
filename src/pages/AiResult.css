@@ -121,6 +121,15 @@
   font-size: 10px;
 }
 
+.ai-result-risk-pending {
+  background: #eef3ff;
+}
+
+.ai-result-risk-pending > strong {
+  color: #405789;
+  font-size: 20px;
+}
+
 .ai-result-risk-bar {
   height: 8px;
   overflow: hidden;
@@ -136,44 +145,26 @@
   background: #e65b5b;
 }
 
-/* 중앙 2단 영역 */
-.ai-result-content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  gap: 18px;
+/* 분석된 대화 */
+.ai-analysis-card.ai-result-conversation {
   margin-bottom: 16px;
-}
-
-.ai-result-content-grid > .ai-analysis-card {
-  min-width: 0;
-  margin-bottom: 0;
   padding: 18px;
   border: 1px solid #e1e8f2;
   border-radius: 11px;
   background: #ffffff;
 }
 
-.ai-result-content-grid h2 {
-  margin: 0;
+.ai-result-conversation h2 {
+  margin: 0 0 12px;
   color: #243b61;
-  font-size: 14px;
+  font-size: 1.125rem;
   font-weight: 800;
 }
 
-.ai-result-section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.ai-result-section-heading p,
 .ai-result-section-description {
-  margin: 6px 0 0;
-  color: #8190a8;
-  font-size: 10px;
+  margin: 0 0 12px;
+  color: #526783;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -201,12 +192,6 @@
   overflow-wrap: anywhere;
 }
 
-.ai-result-empty {
-  margin: 10px 0;
-  color: #8a96a9;
-  font-size: 11px;
-}
-
 .ai-result-uploaded-image {
   margin: 12px 0;
 }
@@ -232,101 +217,59 @@
   font-size: 10px;
 }
 
-/* 디자인 예시 대화 */
-.ai-result-sample-conversation {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ai-result-sample-label {
-  margin: 3px 0;
-  color: #8190a8;
-  font-size: 10px;
+/* 문장별 위험 신호 */
+.ai-result-chat-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .ai-result-chat-line {
-  padding: 11px 13px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: #f0f3f8;
   color: #344968;
-  font-size: 10px;
+  font-size: 0.9375rem;
   line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.ai-result-chat-line p {
+  margin: 0;
 }
 
 .ai-result-chat-highlight {
-  border: 1px solid #ffb8b8;
-  background: #fff2f2;
-  color: #d94343;
+  border-color: #efc3c3;
+  background: #fcf1f1;
+}
+
+.ai-result-chat-highlight > p {
+  color: #a73333;
   font-weight: 700;
 }
 
-.ai-result-chat-warning {
-  background: #fff2f2;
-  color: #d94343;
-}
-
-.ai-result-highlight-label {
-  display: block;
-  width: fit-content;
-  margin-bottom: 5px;
-  padding: 3px 8px;
-  border-radius: 15px;
-  background: #ffdddd;
-  color: #d94343;
-  font-size: 9px;
-}
-
-.ai-result-caption {
-  margin: 10px 0 0;
-  color: #8190a8;
-  font-size: 9px;
-}
-
-/* 위험 신호 목록 */
-.ai-result-signal-list {
+.ai-result-chat-signal {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 10px;
+  margin-top: 7px;
+  font-size: 0.875rem;
 }
 
-.ai-result-signal {
-  padding: 11px 12px;
-  border: 1px solid #e3eaf4;
-  border-radius: 8px;
-  background: #f8faff;
+.ai-result-chat-signal strong {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #f6dddd;
+  color: #902d2d;
+  font-size: 0.8125rem;
 }
 
-.ai-result-signal strong {
-  color: #304766;
-  font-size: 11px;
-}
-
-.ai-result-signal p {
-  margin: 5px 0 0;
-  color: #8190a8;
-  font-size: 10px;
-  line-height: 1.5;
-}
-
-.ai-result-why {
-  margin-top: 9px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #edf3ff;
-}
-
-.ai-result-why strong {
-  color: #304766;
-  font-size: 10px;
-}
-
-.ai-result-why p {
-  margin: 6px 0 0;
-  color: #71819b;
-  font-size: 10px;
-  line-height: 1.6;
+.ai-result-chat-signal p {
+  color: #526078;
 }
 
 /* 하단 대응 안내 */
@@ -423,10 +366,6 @@
     width: 100%;
   }
 
-  .ai-result-content-grid {
-    grid-template-columns: 1fr;
-  }
-
   .ai-result-action-panel {
     grid-template-columns: 1fr;
   }
@@ -441,13 +380,8 @@
     font-size: 21px;
   }
 
-  .ai-result-content-grid > .ai-analysis-card {
+  .ai-analysis-card.ai-result-conversation {
     padding: 15px;
-  }
-
-  .ai-result-section-heading {
-    align-items: flex-start;
-    flex-direction: column;
   }
 
   .ai-result-overview-text h2 {
