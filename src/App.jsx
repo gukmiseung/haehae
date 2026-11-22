@@ -12,8 +12,19 @@ import Footer from './components/Footer'
 
 function App() {
   const [page, setPage] = useState('home')
+  const [riskType, setRiskType] = useState('url')
 
-  const navigate = (nextPage) => {
+  const navigate = (nextPage, options = {}) => {
+    if (nextPage === 'risk') {
+      const nextType = options.type || 'url'
+
+      setRiskType(
+        ['url', 'account', 'phone'].includes(nextType)
+          ? nextType
+          : 'url'
+      )
+    }
+
     setPage(nextPage)
     window.scrollTo(0, 0)
   }
@@ -27,9 +38,18 @@ function App() {
   } else if (page === 'signup') {
     content = <Signup onNavigate={navigate} />
   } else if (page === 'risk') {
-    content = <RiskLookup onNavigate={navigate} />
+    content = (
+      <RiskLookup
+        onNavigate={navigate}
+        initialType={riskType}
+      />
+    )
   } else if (page === 'analysis') {
-    content = <AiAnalysis onNext={() => navigate('result')} />
+    content = (
+      <AiAnalysis
+        onNext={() => navigate('result')}
+      />
+    )
   } else if (page === 'result') {
     content = (
       <AiResult
@@ -38,7 +58,11 @@ function App() {
       />
     )
   } else if (page === 'guide') {
-    content = <SafetyGuide onBack={() => navigate('result')} />
+    content = (
+      <SafetyGuide
+        onBack={() => navigate('result')}
+      />
+    )
   } else {
     content = <Home onNavigate={navigate} />
   }

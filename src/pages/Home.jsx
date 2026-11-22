@@ -12,16 +12,15 @@ function Home({ onNavigate }) {
             </span>
 
             <h1>
-              의심스러운 연락,
+              의심스러운 순간,
               <br />
-              <span>SAFE GUARD</span>로 확인하세요.
+              SAFE GUARD가 함께 확인합니다.
             </h1>
 
             <p>
-              보이스피싱부터 스미싱까지,
+              문자·카카오톡 대화부터 URL, 계좌번호까지
               <br />
-              AI가 의심스러운 대화를 분석하고
-              안전한 대응 방법을 안내합니다.
+              AI가 위험 신호를 분석하고 안전한 대응 방법을 알려드려요.
             </p>
 
             <div className="sg-home-hero-actions">
@@ -30,30 +29,46 @@ function Home({ onNavigate }) {
                 className="sg-home-primary"
                 onClick={() => onNavigate('analysis')}
               >
-                AI 피싱 분석 시작하기
-                <span aria-hidden="true"> →</span>
+                AI 분석 시작하기
               </button>
 
               <button
                 type="button"
                 className="sg-home-secondary"
-                onClick={() => onNavigate('risk')}
+                onClick={() => onNavigate('guide')}
               >
-                위험 정보 조회하기
+                서비스 이용 방법
               </button>
             </div>
           </div>
 
-          <div className="sg-home-hero-visual" aria-hidden="true">
-            <div className="sg-home-shield">
-              <span>✓</span>
+          <div className="sg-home-hero-visual">
+            <div className="sg-home-shield-circle">
+              <svg
+                viewBox="0 0 100 110"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M50 5L91 21V57C91 82 74 99 50 107C26 99 9 82 9 57V21L50 5Z"
+                  stroke="currentColor"
+                  strokeWidth="5"
+                />
+                <path
+                  d="M30 55L44 69L72 39"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-            <div className="sg-home-floating sg-home-floating-top">
-              <span>✓</span> AI 위험 분석
-            </div>
-            <div className="sg-home-floating sg-home-floating-bottom">
-              <span>✓</span> 안전한 대응 안내
-            </div>
+
+            <p>
+              내 정보와 소중한 자산을
+              <br />
+              안전하게 지켜요
+            </p>
           </div>
         </div>
       </section>
@@ -61,87 +76,132 @@ function Home({ onNavigate }) {
       <section className="sg-home-services">
         <div className="sg-home-container">
           <div className="sg-home-section-heading">
-            <span className="sg-home-section-label">OUR SERVICES</span>
-            <h2>SAFE GUARD의 주요 서비스</h2>
+            <h2>무엇이 의심스러우신가요?</h2>
             <p>
-              피싱이 의심되는 순간부터 안전한 대응까지,
-              필요한 기능을 한곳에서 이용하세요.
+              확인이 필요한 내용을 선택하고 간편하게 분석해 보세요.
             </p>
           </div>
 
           <div className="sg-home-card-grid">
             <article className="sg-home-card">
-              <div className="sg-home-card-icon sg-home-card-icon-blue">
-                <span>✦</span>
+              <div className="sg-home-card-heading">
+                <span className="sg-home-card-icon" aria-hidden="true">
+                  ▤
+                </span>
+                <h3>대화 내용 분석</h3>
               </div>
-              <h3>AI 대화 분석</h3>
+
               <p>
-                의심스러운 메시지나 대화 내용을 입력하면
-                AI가 위험 신호를 분석합니다.
+                문자·카카오톡 대화 캡처를
+                <br />
+                업로드하고 위험 표현을 확인해요.
               </p>
+
               <button
                 type="button"
                 onClick={() => onNavigate('analysis')}
               >
-                분석 시작하기 <span aria-hidden="true">→</span>
+                이미지 업로드 →
               </button>
             </article>
 
             <article className="sg-home-card">
-              <div className="sg-home-card-icon sg-home-card-icon-purple">
-                <span>⌕</span>
+              <div className="sg-home-card-heading">
+                <span className="sg-home-card-icon" aria-hidden="true">
+                  ↗
+                </span>
+                <h3>URL 위험 확인</h3>
               </div>
-              <h3>통합 위험 정보 조회</h3>
+
               <p>
-                의심스러운 URL, 전화번호, 계좌번호를
-                한곳에서 조회할 수 있습니다.
+                의심스러운 웹사이트 주소의
+                <br />
+                위험 징후를 확인해요.
               </p>
+
               <button
                 type="button"
-                onClick={() => onNavigate('risk')}
+                onClick={() =>
+                  onNavigate('risk', { type: 'url' })
+                }
               >
-                위험 정보 조회 <span aria-hidden="true">→</span>
+                위험 조회하기 →
               </button>
             </article>
 
             <article className="sg-home-card">
-              <div className="sg-home-card-icon sg-home-card-icon-green">
-                <span>✓</span>
+              <div className="sg-home-card-heading">
+                <span className="sg-home-card-icon" aria-hidden="true">
+                  ☎
+                </span>
+                <h3>계좌·전화번호 조회</h3>
               </div>
-              <h3>맞춤형 대응 가이드</h3>
+
               <p>
-                위험 상황에 맞는 대응 방법과
-                긴급 신고 정보를 확인하세요.
+                계좌번호와 전화번호의
+                <br />
+                신고 이력을 확인해요.
               </p>
+
               <button
                 type="button"
-                onClick={() => onNavigate('guide')}
+                onClick={() =>
+                  onNavigate('risk', { type: 'account' })
+                }
               >
-                대응 방법 확인 <span aria-hidden="true">→</span>
+                위험 조회하기 →
               </button>
             </article>
+          </div>
+
+          <div className="sg-home-disclaimer">
+            <span aria-hidden="true">✓</span>
+            분석 결과는 참고 정보이며, 신고 이력만으로 안전 여부를 단정하지 않습니다.
           </div>
         </div>
       </section>
 
       <section className="sg-home-safety">
         <div className="sg-home-container">
-          <div className="sg-home-safety-box">
-            <div className="sg-home-safety-icon" aria-hidden="true">
-              !
-            </div>
-            <div>
-              <h2>피싱이 의심된다면 잠시 멈추세요.</h2>
-              <p>
-                송금이나 개인정보 제공을 요구받았다면
-                즉시 행동하지 말고 공식 기관을 통해 확인하세요.
-              </p>
-            </div>
+          <h2>안전한 디지털 생활을 위한 안내</h2>
+
+          <div className="sg-home-safety-grid">
             <button
               type="button"
+              className="sg-home-safety-card"
+              disabled
+              title="준비 중인 기능입니다."
+            >
+              <span className="sg-home-safety-tag">정보</span>
+              <span className="sg-home-safety-copy">
+                <strong>최신 피싱 수법 알아보기</strong>
+                <small>새로운 사기 유형과 예방 방법</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="sg-home-safety-card"
               onClick={() => onNavigate('guide')}
             >
-              대응 가이드 보기 →
+              <span className="sg-home-safety-tag">도움</span>
+              <span className="sg-home-safety-copy">
+                <strong>피해가 의심될 때 대처 방법</strong>
+                <small>긴급 연락처와 신고 절차 확인</small>
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="sg-home-safety-card"
+              disabled
+              title="준비 중인 기능입니다."
+            >
+              <span className="sg-home-safety-tag">보호</span>
+              <span className="sg-home-safety-copy">
+                <strong>가족과 함께 피싱 예방하기</strong>
+                <small>가족 안심 기능 이용 안내</small>
+              </span>
             </button>
           </div>
         </div>
