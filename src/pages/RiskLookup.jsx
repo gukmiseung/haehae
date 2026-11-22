@@ -1,5 +1,5 @@
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './RiskLookup.css'
 
 const lookupTypes = {
@@ -26,14 +26,23 @@ const lookupTypes = {
   },
 }
 
-function RiskLookup({ onNavigate }) {
-  const [type, setType] = useState('url')
+function RiskLookup({ onNavigate, initialType = 'url' }) {
+  const validInitialType = lookupTypes[initialType]
+    ? initialType
+    : 'url'
+
+  const [type, setType] = useState(validInitialType)
   const [values, setValues] = useState({
     url: '',
     account: '',
     phone: '',
   })
   const [result, setResult] = useState(null)
+
+  useEffect(() => {
+    setType(lookupTypes[initialType] ? initialType : 'url')
+    setResult(null)
+  }, [initialType])
 
   const current = lookupTypes[type]
 
@@ -107,7 +116,11 @@ function RiskLookup({ onNavigate }) {
         </div>
 
         <section className="sg-risk-panel">
-          <div className="sg-risk-tabs" role="tablist" aria-label="조회 유형">
+          <div
+            className="sg-risk-tabs"
+            role="tablist"
+            aria-label="조회 유형"
+          >
             {Object.entries(lookupTypes).map(([key, item]) => (
               <button
                 key={key}
@@ -124,15 +137,25 @@ function RiskLookup({ onNavigate }) {
 
           <div className="sg-risk-form-content">
             <div className="sg-risk-form-heading">
-              <div className="sg-risk-form-icon" aria-hidden="true">
-                {type === 'url' ? '↗' : type === 'account' ? '₩' : '☎'}
+              <div
+                className="sg-risk-form-icon"
+                aria-hidden="true"
+              >
+                {type === 'url'
+                  ? '↗'
+                  : type === 'account'
+                    ? '₩'
+                    : '☎'}
               </div>
+
               <h2>{current.title}</h2>
               <p>{current.description}</p>
             </div>
 
             <form onSubmit={handleSearch}>
-              <label htmlFor="sg-risk-input">{current.inputLabel}</label>
+              <label htmlFor="sg-risk-input">
+                {current.inputLabel}
+              </label>
 
               <div className="sg-risk-input-row">
                 <input
@@ -148,7 +171,10 @@ function RiskLookup({ onNavigate }) {
                     setResult(null)
                   }}
                 />
-                <button type="submit">위험 정보 조회</button>
+
+                <button type="submit">
+                  위험 정보 조회
+                </button>
               </div>
             </form>
 
@@ -168,7 +194,9 @@ function RiskLookup({ onNavigate }) {
             ) : (
               <>
                 <div className="sg-risk-result-title">
-                  <span className="sg-risk-result-symbol">!</span>
+                  <span className="sg-risk-result-symbol">
+                    !
+                  </span>
                   <h2>위험 정보 조회 준비 중</h2>
                 </div>
 
@@ -196,7 +224,9 @@ function RiskLookup({ onNavigate }) {
 
           <div className="sg-risk-info-grid">
             <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">01</span>
+              <span className="sg-risk-info-number">
+                01
+              </span>
               <h3>의심스러운 링크 주의</h3>
               <p>
                 출처가 불분명한 문자나 메신저의 링크는
@@ -205,7 +235,9 @@ function RiskLookup({ onNavigate }) {
             </article>
 
             <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">02</span>
+              <span className="sg-risk-info-number">
+                02
+              </span>
               <h3>송금 전 상대방 확인</h3>
               <p>
                 계좌번호를 전달받았다면 공식 연락처 등
@@ -214,7 +246,9 @@ function RiskLookup({ onNavigate }) {
             </article>
 
             <article className="sg-risk-info-card">
-              <span className="sg-risk-info-number">03</span>
+              <span className="sg-risk-info-number">
+                03
+              </span>
               <h3>개인정보 제공 주의</h3>
               <p>
                 비밀번호, 인증번호, 금융정보를 요구하는
@@ -227,10 +261,15 @@ function RiskLookup({ onNavigate }) {
         <section className="sg-risk-bottom">
           <div>
             <h2>의심스러운 대화도 받으셨나요?</h2>
-            <p>AI 대화 분석 화면에서 내용을 확인해 보세요.</p>
+            <p>
+              AI 대화 분석 화면에서 내용을 확인해 보세요.
+            </p>
           </div>
 
-          <button type="button" onClick={() => onNavigate?.('analysis')}>
+          <button
+            type="button"
+            onClick={() => onNavigate?.('analysis')}
+          >
             AI 대화 분석하기 →
           </button>
         </section>
