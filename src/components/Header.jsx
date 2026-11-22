@@ -1,7 +1,7 @@
 
 import './Header.css'
 
-function Header({ onNavigate, variant = 'default' }) {
+function Header({ onNavigate, variant = 'default', session, onSignOut, signingOut, signOutError }) {
   const go = (page) => {
     if (onNavigate) onNavigate(page)
   }
@@ -46,7 +46,19 @@ function Header({ onNavigate, variant = 'default' }) {
           >
             메인으로 돌아가기
           </button>
-        ) : (
+        ) : session ? (
+          <div className="sg-header-actions">
+            {signOutError && <span role="alert">{signOutError}</span>}
+            <button
+              type="button"
+              className="sg-header-login"
+              onClick={onSignOut}
+              disabled={signingOut}
+            >
+              {signingOut ? '로그아웃 중…' : '로그아웃'}
+            </button>
+          </div>
+        ) : session === null ? (
           <div className="sg-header-actions">
             <a className="sg-header-mypage-link" href="/mypage" onClick={(event) => follow(event, 'mypage')}>
               마이페이지
@@ -68,7 +80,7 @@ function Header({ onNavigate, variant = 'default' }) {
               회원가입
             </button>
           </div>
-        )}
+        ) : null}
       </div>
     </header>
   )

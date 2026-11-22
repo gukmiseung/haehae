@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { authErrorMessage, authUnavailable, setSessionPersistence, supabase } from '../lib/supabase'
 import './Login.css'
 
 function Login({ onNavigate }) {
@@ -8,8 +9,11 @@ function Login({ onNavigate }) {
   const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = (event) => {
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    if (submitting) return
     setError('')
 
     if (!email.trim() || !password) {
@@ -17,7 +21,25 @@ function Login({ onNavigate }) {
       return
     }
 
-    setError('로그인 기능은 백엔드 연결 후 사용할 수 있습니다.')
+    if (!supabase) {
+      setError(authUnavailable)
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      setSessionPersistence(remember)
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+      if (error) throw error
+      onNavigate('home')
+    } catch (error) {
+      setError(authErrorMessage(error, '로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.'))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -38,9 +60,6 @@ function Login({ onNavigate }) {
           </p>
 
           <div className="sg-login-guest-notice">
-            <strong>
-              검사 결과를 저장하고 다시 보려면 로그인해 주세요.
-            </strong>
             <p>
               메시지 검사는 로그인 없이 이용할 수 있어요.
             </p>
@@ -50,6 +69,7 @@ function Login({ onNavigate }) {
             <label htmlFor="login-email">이메일</label>
             <input
               id="login-email"
+              autoComplete="email"
               type="email"
               placeholder="가입한 이메일을 입력해 주세요."
               value={email}
@@ -60,6 +80,7 @@ function Login({ onNavigate }) {
             <label htmlFor="login-password">비밀번호</label>
             <input
               id="login-password"
+              autoComplete="current-password"
               type="password"
               placeholder="비밀번호를 입력해 주세요."
               value={password}
@@ -94,8 +115,8 @@ function Login({ onNavigate }) {
               </p>
             )}
 
-            <button type="submit" className="sg-login-submit">
-              로그인
+            <button type="submit" className="sg-login-submit" disabled={submitting}>
+              {submitting ? '로그인 중…' : '로그인'}
             </button>
           </form>
 

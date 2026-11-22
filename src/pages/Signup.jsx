@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { authErrorMessage, authUnavailable, setSessionPersistence, supabase } from '../lib/supabase'
 import './Signup.css'
 
 function Signup({ onNavigate }) {
@@ -10,8 +11,12 @@ function Signup({ onNavigate }) {
   const [agreed, setAgreed] = useState(false)
   const [message, setMessage] = useState('')
 
-  const handleSubmit = (event) => {
+  const [submitting, setSubmitting] = useState(false)
+  const [confirmationSent, setConfirmationSent] = useState(false)
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    if (submitting || confirmationSent) return
     setMessage('')
 
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
@@ -29,7 +34,34 @@ function Signup({ onNavigate }) {
       return
     }
 
-    setMessage('회원가입 기능은 백엔드 연결 후 사용할 수 있습니다.')
+    if (!supabase) {
+      setMessage(authUnavailable)
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      setSessionPersistence(true)
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: { name: name.trim() },
+          emailRedirectTo: window.location.origin,
+        },
+      })
+      if (error) throw error
+      if (data.session) {
+        onNavigate('home')
+      } else {
+        setConfirmationSent(true)
+        setMessage('받은 편지함에서 가입 확인 링크를 열어 주세요. 메일이 보이지 않으면 스팸함도 확인해 주세요.')
+      }
+    } catch (error) {
+      setMessage(authErrorMessage(error, '회원가입을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.'))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -51,6 +83,7 @@ function Signup({ onNavigate }) {
             <label htmlFor="signup-name">이름</label>
             <input
               id="signup-name"
+              autoComplete="name"
               type="text"
               placeholder="이름을 입력해 주세요."
               value={name}
@@ -61,16 +94,24 @@ function Signup({ onNavigate }) {
             <label htmlFor="signup-email">이메일</label>
             <input
               id="signup-email"
+              autoComplete="email"
               type="email"
               placeholder="사용할 이메일 주소를 입력해 주세요."
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) => {
+                setEmail(event.target.value)
+                if (confirmationSent) {
+                  setConfirmationSent(false)
+                  setMessage('')
+                }
+              }}
               required
             />
 
             <label htmlFor="signup-password">비밀번호</label>
             <input
               id="signup-password"
+              autoComplete="new-password"
               type="password"
               placeholder="영문, 숫자, 특수문자를 포함해 주세요."
               value={password}
@@ -81,6 +122,7 @@ function Signup({ onNavigate }) {
             <label htmlFor="signup-confirm">비밀번호 확인</label>
             <input
               id="signup-confirm"
+              autoComplete="new-password"
               type="password"
               placeholder="비밀번호를 다시 입력해 주세요."
               value={confirmPassword}
@@ -103,8 +145,8 @@ function Signup({ onNavigate }) {
               </p>
             )}
 
-            <button type="submit" className="sg-signup-submit">
-              회원가입
+            <button type="submit" className="sg-signup-submit" disabled={submitting || confirmationSent}>
+              {submitting ? '가입 중…' : '회원가입'}
             </button>
           </form>
 

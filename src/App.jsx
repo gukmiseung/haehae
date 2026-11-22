@@ -11,12 +11,52 @@ import MyPage from './pages/MyPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScamPopup from './components/ScamPopup'
+import { supabase } from './lib/supabase'
 
 function getPageFromPath() {
   return window.location.pathname.replace(/\/$/, '') === '/mypage' ? 'mypage' : 'home'
 }
 
 function App() {
+  const [session, setSession] = useState(supabase ? undefined : null)
+  const [signingOut, setSigningOut] = useState(false)
+  const [signOutError, setSignOutError] = useState('')
+
+  useEffect(() => {
+    if (!supabase) return
+    let active = true
+    let syncTimer
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      clearTimeout(syncTimer)
+      syncTimer = setTimeout(async () => {
+        try {
+          const { data } = await supabase.auth.getSession()
+          if (active) setSession(data.session)
+        } catch {
+          if (active) setSession(null)
+        }
+      }, 0)
+    })
+    return () => {
+      active = false
+      clearTimeout(syncTimer)
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const signOut = async () => {
+    setSigningOut(true)
+    setSignOutError('')
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      if (error) throw error
+    } catch {
+      setSignOutError('로그아웃하지 못했습니다. 잠시 후 다시 시도해 주세요.')
+    } finally {
+      setSigningOut(false)
+    }
+  }
+
   const [page, setPage] = useState(getPageFromPath)
   const [riskType, setRiskType] = useState('url')
   const [latestScamId, setLatestScamId] = useState(null)
@@ -80,9 +120,9 @@ function App() {
 
   if (page === 'home') {
     content = <Home onNavigate={navigate} />
-  } else if (page === 'login') {
+  } else if (page === 'login' && !session) {
     content = <Login onNavigate={navigate} />
-  } else if (page === 'signup') {
+  } else if (page === 'signup' && !session) {
     content = <Signup onNavigate={navigate} />
   } else if (page === 'mypage') {
     content = (
@@ -145,7 +185,7 @@ function App() {
     content = <Home onNavigate={navigate} />
   }
 
-  const isAuthPage = page === 'login' || page === 'signup'
+  const isAuthPage = !session && (page === 'login' || page === 'signup')
   const isMyPage = page === 'mypage'
 
   return (
@@ -153,6 +193,10 @@ function App() {
       <Header
         variant={isMyPage ? 'mypage' : isAuthPage ? 'auth' : 'default'}
         activePage={page}
+        session={session}
+        onSignOut={signOut}
+        signingOut={signingOut}
+        signOutError={signOutError}
         onNavigate={navigate}
       />
 
