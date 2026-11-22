@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import './LatestScamGuide.css'
 
 const scamData = [
@@ -24,8 +24,9 @@ const scamData = [
     category: '스미싱',
     title: '택배 배송 문자 사칭',
     description: '배송 문제를 핑계로 문자 링크 접속을 유도',
+    detailDescription: '배송 오류나 주소 확인을 핑계로 가짜 링크 접속을 유도하는 사기 유형입니다.',
     method:
-      '배송 주소 오류, 배송 조회, 반송 안내 등을 가장한 문자에 인터넷 주소를 포함해 전송합니다.',
+      '택배회사를 사칭해 배송 문제가 생겼다고 알리고, 가짜 사이트에서 개인정보를 입력하거나 악성 앱을 설치하도록 유도합니다.',
     message:
       '[택배 안내] 배송지 정보에 문제가 있습니다. 아래 링크에서 주소를 확인해 주세요.',
     warning: [
@@ -118,6 +119,24 @@ const categories = [
   '투자 사기',
 ]
 
+const responseSteps = [
+  {
+    title: '링크를 눌렀지만 정보를 입력하지 않았을 때',
+    description: '페이지를 닫고 추가 입력이나 파일 다운로드를 중단하세요. 다운로드한 파일이나 설치된 앱이 있는지 확인하세요.',
+    note: '의심스러운 앱을 설치했다면 한국인터넷진흥원 118에 상담하세요.',
+  },
+  {
+    title: '개인정보나 인증번호를 입력했을 때',
+    description: '공식 앱이나 홈페이지에서 관련 계정의 비밀번호를 바꾸세요. 인증번호나 금융정보를 제공했다면 금융회사에 바로 알리세요.',
+    note: '최근 로그인 기록과 거래 내역을 확인하세요.',
+  },
+  {
+    title: '앱을 설치했거나 금전 피해가 발생했을 때',
+    description: '의심되는 기기에서 금융거래를 중단하고 다른 기기로 금융회사에 연락하세요. 이미 송금했다면 금융회사에 지급정지를 요청하고 경찰 112에 신고하세요.',
+    note: '문자, 송금 내역, 화면 캡처 등 피해 자료를 보관하세요.',
+  },
+]
+
 function LatestScamGuide({ onNavigate, initialScamId }) {
   const [selectedCategory, setSelectedCategory] = useState('전체')
 
@@ -125,15 +144,20 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
     () => scamData.find((scam) => scam.id === initialScamId) || null
   )
 
-  useEffect(() => {
-    if (initialScamId) {
-      const targetScam = scamData.find(
-        (scam) => scam.id === initialScamId
-      )
+  const detailTitle = useRef(null)
+  const listTitle = useRef(null)
+  const listScroll = useRef(null)
 
-      setSelectedScam(targetScam || null)
+  useLayoutEffect(() => {
+    if (selectedScam) {
+      window.scrollTo(0, 0)
+      detailTitle.current.focus({ preventScroll: true })
+    } else if (listScroll.current !== null) {
+      listTitle.current.focus({ preventScroll: true })
+      window.scrollTo(0, listScroll.current)
+      listScroll.current = null
     }
-  }, [initialScamId])
+  }, [selectedScam])
 
   const filteredScams =
     selectedCategory === '전체'
@@ -144,6 +168,20 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
 
   // 상세 화면
   if (selectedScam) {
+    const deliveryText = selectedScam.id === 2
+    const steps = [
+      {
+        title: deliveryText ? '문자만 받았을 때' : '의심스러운 연락만 받았을 때',
+        description: deliveryText
+          ? '문자 속 링크를 열거나 회신하지 마세요. 배송 상태는 택배사 공식 앱이나 홈페이지에서 직접 확인하세요.'
+          : selectedScam.prevention,
+        note: deliveryText
+          ? '의심 문자는 휴대전화의 스팸 신고 기능으로 신고할 수 있어요.'
+          : `주의할 신호 · ${selectedScam.warning.join(' · ')}`,
+      },
+      ...responseSteps,
+    ]
+
     return (
       <main className="sg-latest sg-latest-detail-page">
         <div className="sg-latest-detail-container">
@@ -156,42 +194,47 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
             {selectedScam.category}
           </span>
 
-          <h1 className="sg-latest-detail-title">
+          <h1 className="sg-latest-detail-title" ref={detailTitle} tabIndex={-1}>
             {selectedScam.title}
           </h1>
 
           <p className="sg-latest-detail-description">
-            {selectedScam.description}
+            {selectedScam.detailDescription || selectedScam.description}
           </p>
 
           <section className="sg-latest-detail-panel sg-latest-detail-intro">
-            <h2>이런 사기예요</h2>
+            <h2>01 이런 사기예요</h2>
             <p>{selectedScam.method}</p>
           </section>
 
           <section className="sg-latest-detail-panel">
-            <h2>의심 메시지 예시</h2>
+            <h2>02 의심 메시지 예시</h2>
             <div className="sg-latest-message">
               <p>{selectedScam.message}</p>
               <small>※ 실제 링크가 포함되지 않은 교육용 가상 메시지입니다.</small>
             </div>
           </section>
 
-          <section className="sg-latest-detail-panel">
-            <h2>이런 위험 신호를 확인하세요</h2>
-            <ol className="sg-latest-warning-list">
-              {selectedScam.warning.map((item, index) => (
-                <li key={item}>
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  {item}
+          <section className="sg-latest-detail-panel sg-latest-response">
+            <h2>03 대응 방법</h2>
+            <ol className="sg-latest-response-list">
+              {steps.map(({ title, description, note }, index) => (
+                <li key={title}>
+                  <span className="sg-latest-response-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{title}</h3>
+                    <p>{description}</p>
+                    <p className="sg-latest-response-note">{note}</p>
+                  </div>
                 </li>
               ))}
             </ol>
-          </section>
-
-          <section className="sg-latest-detail-panel sg-latest-detail-prevention">
-            <h2>예방 및 대응 방법</h2>
-            <p>{selectedScam.prevention}</p>
+            <div className="sg-latest-help" aria-label="신고 및 상담 연락처">
+              <strong>도움이 필요할 때</strong>
+              <a href="tel:112">112 경찰 신고</a>
+              <a href="tel:118">118 스미싱·악성 앱 상담</a>
+              <a href="tel:1332">1332 금융 관련 상담</a>
+            </div>
           </section>
 
           {selectedScam.source && (
@@ -206,14 +249,6 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
               </a>
             </div>
           )}
-
-          <button
-            type="button"
-            className="sg-latest-detail-analysis"
-            onClick={() => onNavigate('analysis')}
-          >
-            내 대화도 AI로 분석하기 →
-          </button>
 
           <div className="sg-latest-detail-back-wrap">
             <button
@@ -237,7 +272,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
           <span className="sg-latest-eyebrow">
             SCAM PREVENTION GUIDE
           </span>
-          <h1>사기수법 가이드</h1>
+          <h1 ref={listTitle} tabIndex={-1}>사기수법 가이드</h1>
           <p>
             다양한 피싱 수법을 알아보고 위험 신호와 예방법을 확인해 보세요.
           </p>
@@ -278,7 +313,11 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
 
               <button
                 type="button"
-                onClick={() => setSelectedScam(scam)}
+                aria-label={`${scam.title} 자세히 보기`}
+                onClick={() => {
+                  listScroll.current = window.scrollY
+                  setSelectedScam(scam)
+                }}
               >
                 자세히 보기 <span>→</span>
               </button>

@@ -1,5 +1,19 @@
 # React + Vite
 
+## 대화 위험 분석
+
+- `.env.example`을 복사해 `.env.local`을 만들고, Supabase의 **Publishable key**를 입력합니다. 운영 프런트엔드에도 두 `VITE_SUPABASE_*` 환경변수를 설정합니다.
+- 프로젝트 Owner 또는 Administrator가 [Edge Function Secrets](https://supabase.com/dashboard/project/rhmqkeilrvorlplhueqv/functions/secrets)에 Google AI Studio의 API 키를 `GEMINI_API_KEY`로 등록합니다. 기본 모델은 `gemini-3.5-flash-lite`이며, 필요하면 서버 Secret `GEMINI_MODEL`로 변경할 수 있습니다.
+- Supabase CLI에 로그인한 후 아래 명령으로 분석 요청 한도와 함수를 적용합니다. 대시보드로 배포할 경우 SQL Editor에서 `supabase/migrations/20261122000000_conversation_analysis_quota.sql`을 적용하고, Edge Functions 에디터에서 `supabase/functions/analyze-conversation/index.ts`를 `analyze-conversation`으로 배포합니다.
+
+```powershell
+npx supabase link --project-ref rhmqkeilrvorlplhueqv
+npx supabase db push
+npx supabase functions deploy analyze-conversation --project-ref rhmqkeilrvorlplhueqv
+```
+
+`npm run dev`로 앱을 열고 **AI 위험 분석하기**를 누르면, 텍스트 및 PNG·JPG 캡처가 분석을 위해 Google Gemini로 전송됩니다. 성공한 분석은 현재 탭의 검사 기록에서 다시 볼 수 있습니다. 비회원 호출의 프로젝트 전체 요청 한도는 분당 20건, UTC 기준 일일 200건입니다.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

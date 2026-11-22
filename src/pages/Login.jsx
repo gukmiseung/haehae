@@ -101,9 +101,7 @@ function Login({ onNavigate }) {
               <button
                 type="button"
                 className="sg-login-link"
-                onClick={() =>
-                  setError('비밀번호 찾기는 추후 지원 예정입니다.')
-                }
+                onClick={() => onNavigate?.('resetPassword', { email })}
               >
                 비밀번호를 잊으셨나요?
               </button>

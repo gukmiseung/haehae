@@ -6,72 +6,76 @@ import SafetyGuide from './pages/SafetyGuide'
 import LatestScamGuide from './pages/LatestScamGuide'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import PasswordReset from './pages/PasswordReset'
 import RiskLookup from './pages/RiskLookup'
+import LookupOutcome from './pages/LookupOutcome'
 import MyPage from './pages/MyPage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScamPopup from './components/ScamPopup'
+import LoginRequiredDialog from './components/LoginRequiredDialog'
 import { supabase } from './lib/supabase'
 
+const pagePaths = {
+  login: '/login',
+  signup: '/signup',
+  resetPassword: '/reset-password',
+  mypage: '/mypage',
+}
+
 function getPageFromPath() {
-  return window.location.pathname.replace(/\/$/, '') === '/mypage' ? 'mypage' : 'home'
+  const path = window.location.pathname.replace(/\/$/, '')
+  return Object.keys(pagePaths).find((page) => pagePaths[page] === path) || 'home'
 }
 
 function App() {
+  const [page, setPage] = useState(() => getPageFromPath() === 'mypage' ? 'home' : getPageFromPath())
+  const [isMyPage, setIsMyPage] = useState(() => getPageFromPath() === 'mypage')
   const [session, setSession] = useState(supabase ? undefined : null)
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState('')
-
-  useEffect(() => {
-    if (!supabase) return
-    let active = true
-    let syncTimer
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      clearTimeout(syncTimer)
-      syncTimer = setTimeout(async () => {
-        try {
-          const { data } = await supabase.auth.getSession()
-          if (active) setSession(data.session)
-        } catch {
-          if (active) setSession(null)
-        }
-      }, 0)
-    })
-    return () => {
-      active = false
-      clearTimeout(syncTimer)
-      subscription.unsubscribe()
-    }
-  }, [])
-
-  const signOut = async () => {
-    setSigningOut(true)
-    setSignOutError('')
-    try {
-      const { error } = await supabase.auth.signOut({ scope: 'local' })
-      if (error) throw error
-    } catch {
-      setSignOutError('로그아웃하지 못했습니다. 잠시 후 다시 시도해 주세요.')
-    } finally {
-      setSigningOut(false)
-    }
-  }
-
-  const [page, setPage] = useState(getPageFromPath)
+  const [resetEmail, setResetEmail] = useState('')
   const [riskType, setRiskType] = useState('url')
   const [latestScamId, setLatestScamId] = useState(null)
   const [records, setRecords] = useState([])
   const [activeRecord, setActiveRecord] = useState(null)
   const [viewingHistory, setViewingHistory] = useState(false)
   const nextRecordId = useRef(0)
+  const gateOrigin = useRef(null)
 
   useEffect(() => {
-    const onPopState = () => setPage(getPageFromPath())
+    const onPopState = (event) => {
+      const pathPage = getPageFromPath()
+      setIsMyPage(pathPage === 'mypage')
+      if (pathPage === 'mypage') return
+
+      const origin = gateOrigin.current
+      setPage(origin && event.state?.myPageOrigin === origin.id ? origin.page : pathPage)
+    }
     window.addEventListener('popstate', onPopState)
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
+  useEffect(() => {
+    if (!supabase) return
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
   const navigate = (nextPage, options = {}) => {
+    if (nextPage === 'mypage') {
+      if (isMyPage) return
+      const id = crypto.randomUUID()
+      gateOrigin.current = { id, page }
+      window.history.replaceState({ ...window.history.state, myPageOrigin: id }, '')
+      window.history.pushState({ myPageGate: id }, '', pagePaths.mypage)
+      setIsMyPage(true)
+      window.scrollTo(0, 0)
+      return
+    }
+
     if (nextPage === 'risk') {
       const nextType = options.type || 'url'
 
@@ -86,25 +90,60 @@ function App() {
       setLatestScamId(options.scamId || null)
     }
 
-    const hasMyPagePath = getPageFromPath() === 'mypage'
-    if (nextPage === 'mypage' && !hasMyPagePath) {
-      window.history.pushState(null, '', '/mypage')
-    } else if (hasMyPagePath && !['mypage', 'result', 'riskResult', 'guide'].includes(nextPage)) {
+    if (nextPage === 'resetPassword') {
+      setResetEmail(options.email || '')
+    }
+
+    const currentPathPage = getPageFromPath()
+    const nextPath = pagePaths[nextPage]
+
+    if (isMyPage && !session) {
+      window.history.replaceState(null, '', nextPath || '/')
+    } else if (nextPath && nextPage !== currentPathPage) {
+      window.history.pushState(null, '', nextPath)
+    } else if (!nextPath && currentPathPage !== 'home') {
       window.history.pushState(null, '', '/')
     }
 
+    setIsMyPage(false)
     setPage(nextPage)
     window.scrollTo(0, 0)
+  }
+
+  async function signOut() {
+    setSigningOut(true)
+    setSignOutError('')
+    try {
+      const { error } = await supabase.auth.signOut({ scope: 'local' })
+      if (error) throw error
+      setSession(null)
+      setRecords([])
+      setActiveRecord(null)
+      setViewingHistory(false)
+      navigate('home')
+    } catch {
+      setSignOutError('로그아웃하지 못했습니다. 잠시 후 다시 시도해 주세요.')
+    } finally {
+      setSigningOut(false)
+    }
+  }
+
+  function dismissMyPageGate() {
+    if (gateOrigin.current && window.history.state?.myPageGate === gateOrigin.current.id) {
+      window.history.back()
+    } else {
+      navigate('home')
+    }
   }
 
   function addRecord(data) {
     const now = new Date()
     const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
     const record = {
+      risk: 'pending',
       ...data,
       id: `session-${++nextRecordId.current}`,
       date: localDate.toISOString().slice(0, 16),
-      risk: 'pending',
     }
     setRecords((previous) => [record, ...previous])
     return record
@@ -124,22 +163,22 @@ function App() {
     content = <Login onNavigate={navigate} />
   } else if (page === 'signup' && !session) {
     content = <Signup onNavigate={navigate} />
-  } else if (page === 'mypage') {
-    content = (
-      <MyPage
-        records={records}
-        onOpenRecord={openRecord}
-        onDeleteRecord={(id) => setRecords((previous) => previous.filter((record) => record.id !== id))}
-      />
-    )
+  } else if (page === 'resetPassword') {
+    content = <PasswordReset initialEmail={resetEmail} onBack={() => navigate('login')} />
   } else if (page === 'risk') {
     content = (
       <RiskLookup
         onNavigate={navigate}
         initialType={riskType}
         onRecord={addRecord}
+        onLookupResult={(data) => {
+          setActiveRecord(addRecord(data))
+          navigate('lookupResult')
+        }}
       />
     )
+  } else if (page === 'lookupResult' || (page === 'riskResult' && activeRecord?.lookupResult?.suspicious !== undefined)) {
+    content = <LookupOutcome type={activeRecord.type} result={activeRecord.lookupResult} onNavigate={navigate} />
   } else if (page === 'riskResult') {
     content = <RiskLookup savedRecord={activeRecord} onNavigate={navigate} />
   } else if (page === 'analysis') {
@@ -151,6 +190,7 @@ function App() {
           const record = addRecord({
             type: 'conversation',
             title: title.length > 45 ? `${title.slice(0, 45)}…` : title,
+            risk: data.result.riskLevel,
             analysisData: data,
           })
           setActiveRecord(record)
@@ -177,6 +217,7 @@ function App() {
   } else if (page === 'latestScams') {
     content = (
       <LatestScamGuide
+        key={latestScamId}
         onNavigate={navigate}
         initialScamId={latestScamId}
       />
@@ -185,14 +226,13 @@ function App() {
     content = <Home onNavigate={navigate} />
   }
 
-  const isAuthPage = !session && (page === 'login' || page === 'signup')
-  const isMyPage = page === 'mypage'
+  const isLookupResult = content.type === LookupOutcome
+  const pageVariant = isMyPage ? 'mypage' : isLookupResult ? 'urlResult' : page === 'resetPassword' ? page : 'default'
 
   return (
     <>
       <Header
-        variant={isMyPage ? 'mypage' : isAuthPage ? 'auth' : 'default'}
-        activePage={page}
+        activePage={isMyPage ? 'mypage' : page}
         session={session}
         onSignOut={signOut}
         signingOut={signingOut}
@@ -200,13 +240,28 @@ function App() {
         onNavigate={navigate}
       />
 
-      {content}
+      <div hidden={isMyPage}>
+        {content}
+        {page === 'home' && <ScamPopup onNavigate={navigate} />}
+      </div>
 
-      {page === 'home' && (
-        <ScamPopup onNavigate={navigate} />
+      {isMyPage && session === undefined && (
+        <main className="sg-my-page"><p role="status">로그인 상태를 확인하는 중입니다.</p></main>
       )}
 
-      <Footer variant={isMyPage ? 'mypage' : 'default'} />
+      {isMyPage && session !== undefined && (
+        <>
+          <MyPage
+            preview={!session}
+            records={records}
+            onOpenRecord={openRecord}
+            onDeleteRecord={(id) => setRecords((previous) => previous.filter((record) => record.id !== id))}
+          />
+          {!session && <LoginRequiredDialog onLogin={() => navigate('login')} onDismiss={dismissMyPageGate} />}
+        </>
+      )}
+
+      <Footer variant={pageVariant} />
     </>
   )
 }

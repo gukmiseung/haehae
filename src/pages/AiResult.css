@@ -121,13 +121,25 @@
   font-size: 10px;
 }
 
+.ai-result-risk-low,
+.ai-result-risk-insufficient,
 .ai-result-risk-pending {
   background: #eef3ff;
 }
 
+.ai-result-risk-low > strong,
+.ai-result-risk-insufficient > strong,
 .ai-result-risk-pending > strong {
   color: #405789;
   font-size: 20px;
+}
+
+.ai-result-risk-caution {
+  background: #fff5e6;
+}
+
+.ai-result-risk-caution > strong {
+  color: #965414;
 }
 
 .ai-result-risk-bar {
@@ -159,13 +171,6 @@
   color: #243b61;
   font-size: 1.125rem;
   font-weight: 800;
-}
-
-.ai-result-section-description {
-  margin: 0 0 12px;
-  color: #526783;
-  font-size: 0.875rem;
-  line-height: 1.5;
 }
 
 /* 직접 입력한 대화 */

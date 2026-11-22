@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { conversationRiskLabels } from '../lib/conversationAnalysis'
 import './MyPage.css'
 
 const typeLabels = {
@@ -9,6 +10,7 @@ const typeLabels = {
 }
 
 const riskLabels = {
+  ...conversationRiskLabels,
   high: '위험 높음',
   caution: '주의 필요',
   unreported: '신고 이력 없음',
@@ -46,7 +48,7 @@ function RecordDate({ date }) {
   return <time dateTime={date}>{day.replaceAll('-', '.')} &nbsp;{time}</time>
 }
 
-function MyPage({ records, onOpenRecord, onDeleteRecord }) {
+function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
   const [dismissedIds, setDismissedIds] = useState(readDismissedIds)
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
@@ -56,7 +58,9 @@ function MyPage({ records, onOpenRecord, onDeleteRecord }) {
   const dialogRef = useRef(null)
   const headingRef = useRef(null)
 
-  const allRecords = [...records, ...exampleRecords.filter(({ id }) => !dismissedIds.includes(id))]
+  const allRecords = preview
+    ? exampleRecords
+    : [...records, ...exampleRecords.filter(({ id }) => !dismissedIds.includes(id))]
   const keyword = query.trim().toLowerCase()
   const filteredRecords = allRecords.filter(({ type, title }) =>
     (filter === 'all' || type === filter) &&
@@ -92,7 +96,7 @@ function MyPage({ records, onOpenRecord, onDeleteRecord }) {
   }
 
   return (
-    <main className="sg-my-page">
+    <main className="sg-my-page" inert={preview}>
       <div className="sg-my-container">
         <header className="sg-my-heading">
           <h1>마이페이지</h1>
@@ -101,7 +105,9 @@ function MyPage({ records, onOpenRecord, onDeleteRecord }) {
 
         <section className="sg-my-panel" aria-labelledby="record-heading">
           <h2 id="record-heading" tabIndex={-1} ref={headingRef}>내 검사 기록</h2>
-          <p className="sg-my-description">이 탭에서 진행한 검사와 예시 검사 기록을 다시 확인할 수 있습니다.</p>
+          <p className="sg-my-description">
+            {preview ? '저장된 검사 결과를 다시 확인할 수 있습니다.' : '이 탭에서 진행한 검사와 예시 검사 기록을 다시 확인할 수 있습니다.'}
+          </p>
 
           <div className="sg-my-controls">
             <div className="sg-my-filters" role="group" aria-label="검사 유형 필터">

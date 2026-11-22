@@ -1,5 +1,6 @@
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { analyzeConversation, MAX_CONVERSATION_LENGTH } from '../lib/conversationAnalysis'
 import './AiAnalysis.css'
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
@@ -8,12 +9,23 @@ function AiAnalysis({ onNext }) {
   const [message, setMessage] = useState('')
   const [imagePreview, setImagePreview] = useState('')
   const [imageName, setImageName] = useState('')
+  const [isReadingImage, setIsReadingImage] = useState(false)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [error, setError] = useState('')
   const fileInputRef = useRef(null)
+  const imageReader = useRef(null)
+  const activeRequest = useRef(null)
+
+  useEffect(() => () => {
+    imageReader.current?.abort()
+    activeRequest.current?.abort()
+  }, [])
 
   function handleImageChange(event) {
     const file = event.target.files?.[0]
 
     if (!file) return
+    setError('')
 
     if (!['image/png', 'image/jpeg'].includes(file.type)) {
       alert('PNG 또는 JPG 이미지 파일만 업로드할 수 있습니다.')
@@ -27,15 +39,20 @@ function AiAnalysis({ onNext }) {
       return
     }
 
+    imageReader.current?.abort()
     const reader = new FileReader()
+    imageReader.current = reader
+    setIsReadingImage(true)
 
     reader.onload = () => {
       setImagePreview(reader.result)
       setImageName(file.name)
+      setIsReadingImage(false)
     }
 
     reader.onerror = () => {
-      alert('이미지를 불러오지 못했습니다. 다시 선택해 주세요.')
+      setError('이미지를 불러오지 못했습니다. 다시 선택해 주세요.')
+      setIsReadingImage(false)
       event.target.value = ''
     }
 
@@ -43,6 +60,8 @@ function AiAnalysis({ onNext }) {
   }
 
   function handleImageRemove() {
+    imageReader.current?.abort()
+    setIsReadingImage(false)
     setImagePreview('')
     setImageName('')
 
@@ -51,17 +70,27 @@ function AiAnalysis({ onNext }) {
     }
   }
 
-  function handleAnalyze() {
-    if (!message.trim() && !imagePreview) {
-      alert('대화 내용이나 이미지를 입력해 주세요.')
+  async function handleAnalyze() {
+    if (activeRequest.current || isReadingImage) return
+    const input = { message: message.trim(), imagePreview, imageName }
+    if (!input.message && !imagePreview) {
+      setError('대화 내용이나 이미지를 입력해 주세요.')
       return
     }
 
-    onNext({
-      message: message.trim(),
-      imagePreview,
-      imageName,
-    })
+    const controller = new AbortController()
+    activeRequest.current = controller
+    setIsAnalyzing(true)
+    setError('')
+    try {
+      const result = await analyzeConversation({ ...input, signal: controller.signal })
+      if (!controller.signal.aborted) onNext({ ...input, result })
+    } catch (analysisError) {
+      if (!controller.signal.aborted) setError(analysisError.message)
+    } finally {
+      activeRequest.current = null
+      if (!controller.signal.aborted) setIsAnalyzing(false)
+    }
   }
 
   return (
@@ -75,7 +104,7 @@ function AiAnalysis({ onNext }) {
           </p>
         </div>
 
-        <div className="ai-input-grid">
+        <div className="ai-input-grid" aria-busy={isAnalyzing}>
           <section className="ai-analysis-card">
             <h2>대화 캡처 업로드</h2>
             <p>카카오톡·문자 대화 화면을 이미지로 첨부해 주세요.</p>
@@ -98,6 +127,7 @@ function AiAnalysis({ onNext }) {
                 type="file"
                 accept="image/png,image/jpeg"
                 onChange={handleImageChange}
+                disabled={isAnalyzing}
                 hidden
               />
             </label>
@@ -113,6 +143,7 @@ function AiAnalysis({ onNext }) {
                   type="button"
                   className="ai-image-remove"
                   onClick={handleImageRemove}
+                  disabled={isAnalyzing}
                 >
                   이미지 삭제
                 </button>
@@ -131,9 +162,12 @@ function AiAnalysis({ onNext }) {
 
             <textarea
               value={message}
+              aria-label="대화 내용 직접 입력"
               onChange={(event) => setMessage(event.target.value)}
               placeholder="대화 내용을 이곳에 붙여넣어 주세요."
               rows={7}
+              maxLength={MAX_CONVERSATION_LENGTH}
+              disabled={isAnalyzing}
             />
 
             <div className="ai-example">
@@ -147,15 +181,17 @@ function AiAnalysis({ onNext }) {
               className="ai-analyze-button"
               type="button"
               onClick={handleAnalyze}
+              disabled={isAnalyzing || isReadingImage}
             >
-              AI 위험 분석하기
+              {isAnalyzing ? '대화 분석 중…' : isReadingImage ? '이미지 불러오는 중…' : 'AI 위험 분석하기'}
             </button>
+            {error && <p className="ai-analysis-error" role="alert">{error}</p>}
           </section>
         </div>
 
         <p className="ai-analysis-notice">
-          * 현재는 입력 내용 전달 및 화면 테스트 단계입니다.
-          실제 AI 분석 기능은 아직 연결되지 않았습니다.
+          분석을 요청하면 입력한 대화와 첨부 이미지가 Google Gemini로 전송됩니다.
+          이름·연락처·계좌번호 등 개인정보를 가린 뒤 분석해 주세요.
         </p>
       </div>
     </main>

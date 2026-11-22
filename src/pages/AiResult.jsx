@@ -1,4 +1,5 @@
 
+import { conversationRiskLabels } from '../lib/conversationAnalysis'
 import './AiAnalysis.css'
 import './AiResult.css'
 
@@ -65,9 +66,15 @@ const examples = {
 }
 
 function AiResult({ record, onNext, onBack, onBackToHistory }) {
-  const { message, imagePreview, imageName } = record.analysisData || {}
+  const { message, imagePreview, imageName, result } = record.analysisData || {}
   const example = record.isExample ? examples[record.id] : null
-  const signalCount = example?.filter(({ signal }) => signal).length
+  const riskLevel = result?.riskLevel || (example ? 'high' : 'pending')
+  const riskLabel = conversationRiskLabels[riskLevel] || '분석 대기'
+  const lines = example || result?.signals.map(({ quote, title, description }) => ({
+    text: quote,
+    signal: { title, description },
+  }))
+  const signalCount = lines?.filter(({ signal }) => signal).length
 
   return (
     <main className="ai-analysis ai-result-page">
@@ -83,23 +90,20 @@ function AiResult({ record, onNext, onBack, onBackToHistory }) {
 
         <section className="ai-analysis-card ai-result-overview">
           <div className="ai-result-overview-text">
-            <span className={example ? 'ai-result-tag ai-result-tag-danger' : 'ai-result-tag'}>
-              {example ? '높은 위험 의심' : '입력 확인 완료'}
+            <span className={riskLevel === 'high' ? 'ai-result-tag ai-result-tag-danger' : 'ai-result-tag'}>
+              {result ? 'Gemini 분석' : example ? '높은 위험 의심' : '입력 확인 완료'}
             </span>
 
-            <h2>{example ? '송금을 유도하는 위험 신호가 발견되었습니다.' : 'AI 분석 연결 대기'}</h2>
+            <h2>{result?.summary || (example ? '송금을 유도하는 위험 신호가 발견되었습니다.' : '분석 결과가 없습니다.')}</h2>
 
-            <p>
-              {example
-                ? '가상 대화에서 사칭과 송금 요구에 해당하는 표현을 확인할 수 있습니다.'
-                : '입력한 대화와 첨부 파일을 아래에서 확인할 수 있습니다.'}
-            </p>
+            {example && <p>가상 대화에서 사칭과 송금 요구에 해당하는 표현을 확인할 수 있습니다.</p>}
             {example && <strong>상대방을 확인하기 전에는 송금이나 개인정보 제공을 멈춰주세요.</strong>}
           </div>
 
-          <div className={example ? 'ai-result-risk-level' : 'ai-result-risk-level ai-result-risk-pending'}>
+          <div className={`ai-result-risk-level ai-result-risk-${riskLevel}`}>
             <span>종합 위험도</span>
-            <strong>{example ? '높음' : '분석 대기'}</strong>
+            <strong>{riskLabel}</strong>
+            {result && <p>위험 신호 {signalCount}개{riskLevel === 'insufficient' ? ' · 판단 자료 부족' : ''}</p>}
             {example && (
               <>
                 <p>위험 신호 {signalCount}개 감지 예시</p>
@@ -111,10 +115,6 @@ function AiResult({ record, onNext, onBack, onBackToHistory }) {
 
         <section className="ai-analysis-card ai-result-conversation" aria-labelledby="analyzed-conversation">
           <h2 id="analyzed-conversation">분석된 대화</h2>
-
-          {!example && (
-            <p className="ai-result-section-description">문장별 위험 신호는 AI 서비스 연결 후 제공됩니다.</p>
-          )}
 
           {message && (
             <div className="ai-result-user-input">
@@ -131,10 +131,10 @@ function AiResult({ record, onNext, onBack, onBackToHistory }) {
             </div>
           )}
 
-          {example && (
+          {lines?.length > 0 && (
             <ul className="ai-result-chat-list" role="list">
-              {example.map(({ text, signal }) => (
-                <li key={text} className={`ai-result-chat-line${signal ? ' ai-result-chat-highlight' : ''}`}>
+              {lines.map(({ text, signal }, index) => (
+                <li key={`${index}-${text}`} className={`ai-result-chat-line${signal ? ' ai-result-chat-highlight' : ''}`}>
                   <p>{text}</p>
                   {signal && (
                     <div className="ai-result-chat-signal">
@@ -152,9 +152,9 @@ function AiResult({ record, onNext, onBack, onBackToHistory }) {
           <div className="ai-result-action-copy">
             <h2>지금 이렇게 대응하세요</h2>
             <p>
-              송금을 중단하고, 해당 기관의 공식 연락처로 직접 사실을 확인하세요.
+              {result?.recommendation || '송금을 중단하고, 해당 기관의 공식 연락처로 직접 사실을 확인하세요.'}
             </p>
-            {example && <small>이 분석은 참고용이며 사기 여부를 확정하지 않습니다.</small>}
+            <small>이 분석은 참고용이며 사기 여부를 확정하지 않습니다.</small>
           </div>
 
           <div className="ai-result-action-buttons">

@@ -52,6 +52,26 @@ const banks = [
   '저축은행',
 ]
 
+const urlExampleResult = {
+  value: 'https://delivery-check.example/verify',
+  isExample: true,
+  suspicious: true,
+}
+
+const phoneExampleResult = {
+  value: '010-****-4832',
+  reportCount: 3,
+  isExample: true,
+  suspicious: true,
+}
+
+const accountExampleResult = {
+  value: '예시은행 ***-****-**123',
+  reportCount: 3,
+  isExample: true,
+  suspicious: true,
+}
+
 function LookupResult({ result }) {
   if (!result) return null
 
@@ -88,7 +108,7 @@ function LookupResult({ result }) {
   )
 }
 
-function RiskLookup({ onNavigate, initialType = 'url', onRecord, savedRecord }) {
+function RiskLookup({ onNavigate, initialType = 'url', onRecord, onLookupResult, savedRecord }) {
   const validInitialType = lookupTypes[initialType]
     ? initialType
     : 'url'
@@ -136,8 +156,9 @@ function RiskLookup({ onNavigate, initialType = 'url', onRecord, savedRecord }) 
     }
 
     if (type === 'url') {
+      let parsed
       try {
-        const parsed = new URL(value)
+        parsed = new URL(value)
 
         if (!['http:', 'https:'].includes(parsed.protocol)) {
           throw new Error('Invalid protocol')
@@ -149,22 +170,51 @@ function RiskLookup({ onNavigate, initialType = 'url', onRecord, savedRecord }) 
         })
         return
       }
+
+      if (onLookupResult) {
+        onLookupResult({
+          type,
+          title: 'delivery-check.example',
+          lookupResult: urlExampleResult,
+        })
+        return
+      }
     }
 
-    if (type === 'phone' && !/^[0-9+\-\s()]{8,20}$/.test(value)) {
-      setResult({
-        status: 'error',
-        message: '전화번호 형식을 확인해 주세요.',
-      })
-      return
+    if (type === 'phone') {
+      const digits = value.replace(/\D/g, '')
+      if (!/^\+?[\d\s()-]{8,20}$/.test(value) || digits.length < 8 || digits.length > 15) {
+        setResult({ status: 'error', message: '전화번호 형식을 확인해 주세요.' })
+        return
+      }
+
+      if (onLookupResult) {
+        onLookupResult({
+          type,
+          title: phoneExampleResult.value,
+          lookupResult: phoneExampleResult,
+        })
+        return
+      }
     }
 
-    if (type === 'account' && !/^[0-9-\s]{6,30}$/.test(value)) {
-      setResult({
-        status: 'error',
-        message: '계좌번호는 숫자와 하이픈(-)으로 입력해 주세요.',
-      })
-      return
+    if (type === 'account') {
+      if (!/^[0-9-\s]{6,30}$/.test(value) || value.replace(/\D/g, '').length < 6) {
+        setResult({
+          status: 'error',
+          message: '계좌번호는 숫자 6자리 이상으로 입력해 주세요. 하이픈(-)도 사용할 수 있습니다.',
+        })
+        return
+      }
+
+      if (onLookupResult) {
+        onLookupResult({
+          type,
+          title: accountExampleResult.value,
+          lookupResult: accountExampleResult,
+        })
+        return
+      }
     }
 
     const lookupResult = {

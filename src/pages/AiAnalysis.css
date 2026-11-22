@@ -371,3 +371,14 @@
 .ai-image-remove:hover {
   background: #f5f8ff;
 }
+
+.ai-analyze-button:disabled,
+.ai-image-remove:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.ai-analysis-card .ai-analysis-error {
+  margin: 10px 0 0;
+  color: #a73333;
+}

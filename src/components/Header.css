@@ -1,9 +1,6 @@
-
-/* Header 전체 */
 .sg-header {
   width: 100%;
-  height: 70px;
-  background: #ffffff;
+  background: #fff;
   border-bottom: 1px solid #edf1f7;
   position: relative;
   z-index: 100;
@@ -11,268 +8,142 @@
 
 .sg-header-inner {
   width: min(1120px, calc(100% - 48px));
-  height: 100%;
-  margin: 0 auto;
+  min-height: 69px;
+  margin-inline: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 30px;
+  gap: 12px;
 }
 
-/* SAFE GUARD 로고 */
 .sg-header-logo {
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  flex-shrink: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: #243b70;
+  color: #293763;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.3px;
-  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .sg-header-shield {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   width: 25px;
   height: 29px;
-  background: #506df0;
-  color: #ffffff;
-  font-size: 15px;
+  background: #5b68e7;
+  color: #fff;
+  font-size: 16px;
   font-weight: 800;
-  clip-path: polygon(
-    50% 0%,
-    94% 18%,
-    90% 70%,
-    50% 100%,
-    10% 70%,
-    6% 18%
-  );
-}
-
-/* 가운데 메뉴 */
-.sg-header-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-  flex: 1;
-}
-
-.sg-header-nav button {
-  padding: 8px 0;
-  border: none;
-  background: transparent;
-  color: #71819b;
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.sg-header-nav button:hover {
-  color: #3473db;
-}
-
-.sg-header-nav .sg-header-home {
-  color: #3473db;
-  font-weight: 700;
-}
-
-/* 오른쪽 로그인 */
-.sg-header-actions {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.sg-header-login {
-  min-width: 75px;
-  height: 38px;
-  padding: 0 18px;
-  border: 1px solid #dce5f2;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #243b61;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.sg-header-login:hover {
-  border-color: #3473db;
-  color: #3473db;
-}
-
-/* 로그인·회원가입 페이지의 돌아가기 버튼 */
-.sg-header-back {
-  margin-left: auto;
-  padding: 8px 0;
-  border: none;
-  background: transparent;
-  color: #71819b;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.sg-header-back:hover {
-  color: #3473db;
-}
-
-/* 태블릿 */
-@media (max-width: 850px) {
-  .sg-header-inner {
-    gap: 15px;
-  }
-
-  .sg-header-nav {
-    gap: 16px;
-  }
-
-  .sg-header-nav button {
-    font-size: 12px;
-  }
-
-  .sg-header-logo {
-    font-size: 16px;
-  }
-}
-
-/* 모바일 */
-@media (max-width: 650px) {
-  .sg-header {
-    height: auto;
-    min-height: 64px;
-  }
-
-  .sg-header-inner {
-    width: calc(100% - 32px);
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 14px 0;
-  }
-
-  .sg-header-logo {
-    font-size: 16px;
-  }
-
-  .sg-header-nav {
-    order: 3;
-    flex-basis: 100%;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .sg-header-nav button {
-    font-size: 11px;
-  }
-
-  .sg-header-actions {
-    margin-left: auto;
-  }
-
-  .sg-header-login {
-    min-width: 65px;
-    height: 34px;
-    padding: 0 12px;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 380px) {
-  .sg-header-nav {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 16px;
-  }
-}
-
-.sg-header-nav button:disabled {
-  color: #aab5c6;
-  cursor: not-allowed;
+  clip-path: polygon(50% 0, 94% 18%, 90% 70%, 50% 100%, 10% 70%, 6% 18%);
 }
 
 .sg-header-actions {
+  display: flex;
+  align-items: center;
   gap: 10px;
-}
-
-.sg-header-signup {
-  min-width: 75px;
-  height: 38px;
-  padding: 0 18px;
-  border: 1px solid #3473db;
-  border-radius: 7px;
-  background: #3473db;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.sg-header-signup:hover {
-  background: #285fbd;
+  white-space: nowrap;
 }
 
 .sg-header-mypage-link {
-  padding: 8px 4px;
+  padding: 9px 4px;
   color: #405474;
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;
-  white-space: nowrap;
 }
 
 .sg-header-mypage-link:hover {
   text-decoration: underline;
 }
 
-.sg-header-mypage {
-  height: 73px;
-}
-
-.sg-header-mypage .sg-header-inner {
-  width: min(1156px, calc(100% - 48px));
-}
-
-.sg-header-mypage a {
+.sg-header-login,
+.sg-header-signup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 75px;
+  min-height: 38px;
+  padding: 0 18px;
+  border: 1px solid #dce5f2;
+  border-radius: 7px;
+  background: #fff;
+  color: #293763;
+  font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
 }
 
-.sg-header-mypage .sg-header-logo {
-  gap: 13px;
-  color: #293754;
+.sg-header-login:hover {
+  border-color: #526fcb;
+  color: #405db7;
 }
 
-.sg-header-diamond {
-  width: 21px;
-  height: 21px;
-  background: #606dd4;
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+.sg-header-signup {
+  border-color: #526fcb;
+  background: #526fcb;
+  color: #fff;
+}
+
+.sg-header-signup:hover {
+  border-color: #405db7;
+  background: #405db7;
+}
+
+.sg-header-error {
+  max-width: 11rem;
+  white-space: normal;
+  color: #a73333;
+  font-size: 12px;
+}
+
+.sg-header :is(a, button):focus-visible {
+  outline: 2px solid #526fcb;
+  outline-offset: 3px;
 }
 
 @media (max-width: 650px) {
-  .sg-header-signup {
-    min-width: 65px;
-    height: 34px;
-    padding: 0 12px;
-    font-size: 12px;
-  }
-
-  .sg-header-mypage {
-    height: 64px;
-  }
-
-  .sg-header-mypage .sg-header-inner {
+  .sg-header-inner {
     width: calc(100% - 32px);
+    min-height: 63px;
   }
 
-  .sg-header-mypage-link {
+  .sg-header-logo {
+    gap: 7px;
+    font-size: 15px;
+  }
+
+  .sg-header-actions {
+    gap: 6px;
+  }
+
+  .sg-header-login,
+  .sg-header-signup {
+    min-width: 0;
+    min-height: 34px;
+    padding-inline: 10px;
+  }
+
+  .sg-header-actions :is(a, button) {
     font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sg-header-inner {
+    width: calc(100% - 24px);
+    gap: 7px;
+  }
+
+  .sg-header-shield {
+    width: 21px;
+    height: 25px;
+  }
+
+  .sg-header-login,
+  .sg-header-signup {
+    padding-inline: 7px;
   }
 }
