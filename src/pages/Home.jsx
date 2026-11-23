@@ -82,7 +82,7 @@ function Home({ onNavigate }) {
                 type="button"
                 onClick={() => onNavigate('analysis')}
               >
-                이미지 업로드 →
+                이미지 업로드 <span aria-hidden="true">→</span>
               </button>
             </article>
 
@@ -91,20 +91,13 @@ function Home({ onNavigate }) {
                 <span className="sg-home-card-icon" aria-hidden="true">
                   ⌕
                 </span>
-                <h3>URL 위험 확인</h3>
+                <h3>통합 위험 정보 조회</h3>
               </div>
 
-              <p>
-                의심스러운 웹사이트 주소의
-                <br />
-                위험 징후를 확인해요.
-              </p>
+              <p>의심스러운 URL, 계좌번호, 전화번호의 위험 징후를 확인해요.</p>
 
-              <button
-                type="button"
-                onClick={() => onNavigate('risk', { type: 'url' })}
-              >
-                위험 조회하기 →
+              <button type="button" onClick={() => onNavigate('risk')}>
+                바로가기 <span aria-hidden="true">→</span>
               </button>
             </article>
 
@@ -126,7 +119,7 @@ function Home({ onNavigate }) {
                 type="button"
                 onClick={() => onNavigate('latestScams')}
               >
-                바로 가기 →
+                바로 가기 <span aria-hidden="true">→</span>
               </button>
             </article>
           </div>

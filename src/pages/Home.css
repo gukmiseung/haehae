@@ -117,10 +117,10 @@
 }
 
 .sg-home-card {
-  min-height: 165px;
-  padding: 20px 22px;
-  border: 1px solid #dfe7f5;
-  border-radius: 12px;
+  min-height: 204px;
+  padding: 23px clamp(14px, 2.4vw, 26px);
+  border: 1px solid #e6eaf2;
+  border-radius: 14px;
   background: #ffffff;
 }
 
@@ -128,7 +128,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 11px;
 }
 
 .sg-home-card-icon {
@@ -136,10 +136,10 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 37px;
-  height: 37px;
-  border-radius: 10px;
-  background: #eaf0ff;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: #eff2fe;
   color: #4169e1;
   font-size: 19px;
   font-weight: 700;
@@ -147,30 +147,42 @@
 
 .sg-home-card h3 {
   margin: 0;
-  color: #243b61;
-  font-size: 15px;
+  color: #273151;
+  font-size: 18px;
   font-weight: 700;
+  line-height: 1.3;
+  word-break: keep-all;
 }
 
 .sg-home-card p {
-  margin: 0 0 12px;
-  color: #8190a8;
-  font-size: 12px;
-  line-height: 1.5;
+  max-width: 230px;
+  margin: 0 0 11px;
+  color: #6b7589;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: keep-all;
 }
 
 .sg-home-card button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   padding: 0;
   border: none;
   background: transparent;
-  color: #4169e1;
-  font-size: 12px;
-  font-weight: 600;
+  color: #626fde;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .sg-home-card button:hover {
   text-decoration: underline;
+}
+
+.sg-home-card button span {
+  font-size: 21px;
+  line-height: 1;
 }
 
 /* 분석 결과 안내 */
@@ -209,15 +221,6 @@
   .sg-home-card-grid {
     gap: 12px;
   }
-
-  .sg-home-card {
-    padding: 17px 14px;
-  }
-
-  .sg-home-card-heading {
-    align-items: flex-start;
-    flex-direction: column;
-  }
 }
 
 /* 모바일 */
@@ -252,16 +255,6 @@
 
   .sg-home-card-grid {
     grid-template-columns: 1fr;
-  }
-
-  .sg-home-card {
-    min-height: auto;
-    padding: 20px;
-  }
-
-  .sg-home-card-heading {
-    flex-direction: row;
-    align-items: center;
   }
 
   .sg-home-disclaimer {
