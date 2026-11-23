@@ -1,3 +1,11 @@
+export {}
+
+// Supabase Edge Runtime provides these Deno APIs.
+declare const Deno: {
+  env: { get(name: string): string | undefined }
+  serve(handler: (request: Request) => Response | Promise<Response>): void
+}
+
 const MAX_TEXT_LENGTH = 12_000
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 const MAX_BODY_BYTES = 4 * Math.ceil(MAX_IMAGE_BYTES / 3) + 80_000
@@ -95,7 +103,7 @@ function isAnalysis(value: any) {
       isShortText(item.title, 100) && isShortText(item.description, 500))
 }
 
-function getQuotaApiHeaders() {
+function getQuotaApiHeaders(): Record<string, string> | null {
   const legacyKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')?.trim()
   if (legacyKey) return { apikey: legacyKey, Authorization: `Bearer ${legacyKey}` }
 
