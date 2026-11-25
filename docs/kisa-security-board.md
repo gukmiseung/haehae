@@ -6,12 +6,14 @@
 
 2026-11-25에 아래 공식 RSS 응답을 직접 확인했고 테스트 fixture로 보관했다.
 
-https://www.boho.or.kr/kr/rss.do?bbsId=B0000133
+https://www.boho.or.kr/kr/rss.do?bbsId=B0000133&searchCnd=1&searchWrd=피싱
+
+같은 보안공지 RSS에 제목 검색 조건 `searchCnd=1`과 `searchWrd`를 적용한다. 매시간 `피싱`, `스미싱`, `사칭`, `탈취`, `큐싱`, `사기` 여섯 검색어로 수집하고 URL로 중복을 제거한다. 검색 조건이 실제 RSS 결과에 반영되는 것을 원본 응답으로 확인했다.
 
 - RSS 2.0의 `rss.channel.item`에 `title`, `link`, `pubDate`, `guid`가 있다.
 - `title`, `link`, `pubDate`는 CDATA를 사용하며 앞뒤 공백이 있다. 날짜는 `YYYY-MM-DD`다.
 - 소개, 카테고리, 본문은 없다. `summary`는 NULL로 저장하며 UI에 원문 확인 안내를 표시한다. 본문을 크롤링하거나 생성하지 않는다.
-- 현재 10개 공지는 모두 제품 보안 업데이트다. 사기 예방 관련 공지가 **0개인 것이 정상**이다. 최초 실행도 현재 RSS의 관련 글만 가져오며, RSS 범위 밖 과거 글을 추가 수집하지 않는다.
+- 검색 없는 기본 RSS는 최신 제품 업데이트 10건이지만, 제목 검색 RSS에는 과거 사기 예방 공지도 포함된다. 2026-11-25 기준 여섯 검색 결과 48건을 선별·중복 제거하여 **관련 공지 28건**을 확인했다. 각 검색 결과가 제공하는 범위에서 수집하며 과거 게시 날짜를 그대로 보존한다. 제품 취약점·서버 보안 공지는 제외하고 큐싱·파밍은 피싱으로 분류한다.
 - 카테고리는 앱에서 제목의 명시적 키워드로 분류한다. 보이스피싱, 스미싱, 피싱, 기관 사칭, 개인정보·계정정보 탈취, 투자·금융 등 사기 예방 문구가 기준이다. 분류는 KISA가 제공한 분류라고 표시하지 않는다. 일반 취약점·제품 업데이트는 제외한다.
 - 검색용 쿼리 값이 바뀌어도 `bbsId`와 `nttId`를 기준으로 같은 공식 URL로 정규화한다. DB의 UNIQUE 제약과 ON CONFLICT DO NOTHING으로 동시 실행과 재시도의 중복을 막는다.
 - 제목, 날짜, 출처와 공식 링크 중심으로 안내한다. 원문 이미지·본문·가상 예시는 복제하지 않는다. 향후 본문 활용 범위를 늘릴 때는 KISA 해당 자료의 이용 조건을 확인한다.
@@ -21,6 +23,8 @@ https://www.boho.or.kr/kr/rss.do?bbsId=B0000133
 프로젝트 관리 권한으로 Supabase SQL Editor에서 다음 파일 전체를 실행한다.
 
 `supabase/migrations/20261125000000_security_posts.sql`
+
+이어서 `supabase/migrations/20261125000001_kisa_fraud_posts.sql`을 실행하면 실제 검색 RSS에서 확인한 사기 예방 공지 28건을 등록한다. 테이블이 이미 있으면 두 번째 SQL만 실행한다. 초기 데이터 SQL은 URL 충돌 시 건너뛰므로 다시 실행해도 중복되지 않는다. 프런트엔드는 이 데이터도 Supabase에서 조회하며 이후 수집된 글과 함께 최신순으로 표시한다.
 
 `security_posts`에는 UUID `id`, `title`, nullable `summary`, `category`, `source`, UNIQUE `source_url`, nullable DATE `published_at`, `created_at`이 생긴다. RSS가 시간대를 제공하지 않으므로 게시일은 DATE다. 유효하지 않거나 없는 날짜는 NULL이며 최신순에서 뒤에 배치한다.
 
@@ -68,7 +72,7 @@ from net._http_response
 where id = 123;
 ```
 
-성공하면 HTTP 200과 `fetched`, `matched`, `inserted`, `existing`, `invalidItems`가 나온다. 현재 관측 RSS는 `fetched=10`, `matched=0`, `inserted=0`이다. 관련 글이 있을 때 동일 RSS를 다시 실행하면 새 `inserted`는 0이다.
+성공하면 HTTP 200과 `fetched`, `matched`, `inserted`, `existing`, `invalidItems`가 나온다. 현재 관측 RSS는 `fetched=48`, `matched=28`, `completedQueries=6`, `failedQueries=[]`다. 초기 데이터 SQL을 먼저 적용했다면 `inserted=0`, `existing=28`이 정상이다. `fetched`는 검색 간 중복을 포함한 개수이고 `matched`는 중복 제거 후 개수다. 검색 일부가 실패하면 성공한 검색 결과를 저장하고 `failedQueries`에 실패한 검색어를 반환한다. 전부 실패하면 HTTP 502로 응답한다. 관련 글이 있을 때 동일 RSS를 다시 실행하면 새 `inserted`는 0이다.
 
 Cron 상태와 실행 기록은 아래에서 확인한다. Cron 성공은 HTTP 요청 제출 성공일 수 있으므로 Edge Function 로그와 위 HTTP 응답도 확인한다.
 
@@ -99,7 +103,7 @@ deno task --config supabase/functions/collect-kisa-rss/deno.json test
 npm run build
 ```
 
-테스트는 실제 RSS fixture의 0건 선별, 합성 테스트 데이터의 분류, CDATA, 잘못된 날짜·링크·XML, 중복 URL을 확인한다. 합성 공지는 운영 DB에 넣지 않는다.
+테스트는 실제 검색 RSS fixture에서 28건 수집과 검색 간 중복 제거, 일부·전체 검색 실패, 제목 엔티티 디코딩, 합성 테스트 데이터의 분류, CDATA, 잘못된 날짜·링크·XML을 확인한다. 합성 공지는 운영 DB에 넣지 않는다.
 
 SQL Editor에서 `select private.request_kisa_rss();`로 수동 수집 요청을 보낼 수 있다. 이후 해당 HTTP 응답과 Edge Function Logs를 확인한다. 실패해도 기존 `security_posts`는 유지되며 다음 정각에 재시도한다. 오류 응답에는 서버 비밀값을 포함하지 않는다.
 
@@ -111,9 +115,9 @@ SQL Editor에서 `select private.request_kisa_rss();`로 수동 수집 요청을
 
 ### 이번 구현에서 확인한 결과
 
-- Deno 타입 검사와 파서 테스트 5개 통과. 실제 RSS 10건에서 관련 공지 0건을 확인했다.
-- 로컬 수집 함수의 실제 RSS 요청은 HTTP 200. 비밀값 없음·불일치 요청은 401, GET은 405를 확인했다.
-- 로컬 PostgreSQL 호환 PGlite에서 마이그레이션 실행, 공개 조회, anon/authenticated 쓰기 거부, service_role 등록, 중복·원문 URL 제약을 확인했다.
+- Deno 타입 검사와 파서·수집 테스트 9개 통과. 실제 제목 검색 RSS 48건에서 관련 공지 28건을 확인했다.
+- 로컬 수집 함수로 실제 검색 RSS → 모의 DB 등록을 확인했다. 첫 실행 28건 등록, 같은 수집 재실행 0건 추가로 중복 방지를 검증했다. 비밀값 없음·불일치 요청은 401, GET은 405다.
+- 로컬 PostgreSQL 호환 PGlite에서 마이그레이션 실행, 공개 조회, anon/authenticated 쓰기 거부, service_role 등록, 중복·원문 URL 제약을 확인했다. 초기 데이터 SQL을 두 번 적용해도 총 28건이 유지됐다.
 - Chromium의 모의 DB 응답으로 목록, 필터, 상세, 원문 링크, 데스크톱 3열·모바일 1열, 빈 목록, 실패 시 기존 목록 유지, 재시도 및 자동 갱신을 확인했다. 테스트 게시글은 운영 DB에 등록하지 않았다.
 - Vite 빌드 통과. 번들 크기 500 kB 경고가 있다. 전체 ESLint는 기존 ScamPopup/RiskLookup의 set-state-in-effect 오류 2건이 남아 있다. 새 게시판 파일과 홈 파일의 ESLint는 통과했다.
 - 운영 프로젝트 관리자 토큰이 없고 이 작업 환경에서 Supabase 도메인 요청은 403으로 차단되어, 실제 DB·함수·Vault·Cron 적용과 운영 RLS/정각 실행 결과는 확인하지 못했다.

@@ -1,0 +1,37 @@
+
+
+<rss version="2.0">
+<channel>
+	<title>
+		<![CDATA[보호나라>알림마당>보안공지]]>
+	</title>
+	<link>https://www.boho.or.kr/</link>
+	<description>
+		<![CDATA[보호나라>알림마당>보안공지]]>
+	</description>
+	<language>ko-kr</language>
+
+	<item>
+		<title><![CDATA[ 정부기관, 싱크탱크 사칭 큐싱(Quishing) 유포 주의 권고 ]]></title>
+		<link><![CDATA[ https://www.boho.or.kr/kr/bbs/view.do?searchCnd=1&bbsId=B0000133&searchWrd=%ED%81%90%EC%8B%B1&menuNo=205020&pageIndex=1&categoryCode=&nttId=71936 ]]></link>
+		<pubDate><![CDATA[ 2026-01-10 ]]></pubDate>
+		<guid isPermaLink="false">https://www.boho.or.kr/kr/bbs/view.do?bbsId=B0000133&amp;menuNo=&amp;nttId=71936</guid>
+	</item>
+
+	<item>
+		<title><![CDATA[ 무료 쿠폰앱·사은행사 등 사칭 큐싱 주의 권고 ]]></title>
+		<link><![CDATA[ https://www.boho.or.kr/kr/bbs/view.do?searchCnd=1&bbsId=B0000133&searchWrd=%ED%81%90%EC%8B%B1&menuNo=205020&pageIndex=1&categoryCode=&nttId=71612 ]]></link>
+		<pubDate><![CDATA[ 2024-12-19 ]]></pubDate>
+		<guid isPermaLink="false">https://www.boho.or.kr/kr/bbs/view.do?bbsId=B0000133&amp;menuNo=&amp;nttId=71612</guid>
+	</item>
+
+	<item>
+		<title><![CDATA[ 피싱과 큐싱의 결합 공격 ]]></title>
+		<link><![CDATA[ https://www.boho.or.kr/kr/bbs/view.do?searchCnd=1&bbsId=B0000133&searchWrd=%ED%81%90%EC%8B%B1&menuNo=205020&pageIndex=1&categoryCode=&nttId=21619 ]]></link>
+		<pubDate><![CDATA[ 2014-04-07 ]]></pubDate>
+		<guid isPermaLink="false">https://www.boho.or.kr/kr/bbs/view.do?bbsId=B0000133&amp;menuNo=&amp;nttId=21619</guid>
+	</item>
+
+
+</channel>
+</rss>

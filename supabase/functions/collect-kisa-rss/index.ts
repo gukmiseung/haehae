@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.119.2'
-import { MAX_FEED_BYTES, parseFeed, RSS_URL } from './feed.ts'
+import { MAX_FEED_BYTES, collectFeeds } from './feed.ts'
 
 async function authorized(request: Request, expected: string): Promise<boolean> {
   const supplied = request.headers.get('x-cron-secret') ?? ''
@@ -16,8 +16,8 @@ async function authorized(request: Request, expected: string): Promise<boolean> 
   return difference === 0
 }
 
-async function fetchFeed(): Promise<string> {
-  const response = await fetch(RSS_URL, {
+async function fetchFeed(url: string): Promise<string> {
+  const response = await fetch(url, {
     headers: { Accept: 'application/rss+xml, application/xml, text/xml' },
     signal: AbortSignal.timeout(20_000),
     redirect: 'error',
@@ -53,8 +53,8 @@ Deno.serve(async (request: Request) => {
   if (!await authorized(request, secret)) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    // Fetch and parse the complete feed before making any database writes.
-    const { fetched, invalidItems, posts } = parseFeed(await fetchFeed())
+    const { fetched, invalidItems, completedQueries, failedQueries, posts } = await collectFeeds(fetchFeed)
+    if (failedQueries.length) console.warn('Some KISA RSS searches failed', { failedQueries })
     let inserted = 0
     if (posts.length) {
       const db = createClient(url, serviceKey, {
@@ -68,7 +68,7 @@ Deno.serve(async (request: Request) => {
       if (error) throw new Error(`Database write failed (${error.code})`)
       inserted = data?.length ?? 0
     }
-    const result = { fetched, matched: posts.length, inserted, existing: posts.length - inserted, invalidItems }
+    const result = { fetched, matched: posts.length, inserted, existing: posts.length - inserted, invalidItems, completedQueries, failedQueries }
     console.info('KISA collection completed', result)
     return Response.json(result)
   } catch (error) {

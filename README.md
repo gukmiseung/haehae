@@ -40,4 +40,4 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## 공식 사기 예방 정보
 
-기존 사기수법 가이드는 KISA 보안공지를 Supabase에서 읽는 게시판으로 연결됩니다. 테이블 생성, Edge Function 배포, Vault 비밀값 및 매시간 Cron 설정은 [KISA 게시판 운영 가이드](docs/kisa-security-board.md)를 따릅니다. 현재 RSS가 제공하는 공지 중 관련 제목만 수집하며, 관련 글이 없으면 빈 목록을 표시합니다.
+기존 사기수법 가이드는 KISA 보안공지를 Supabase에서 읽는 게시판으로 연결됩니다. 테이블 생성, Edge Function 배포, Vault 비밀값 및 매시간 Cron 설정은 [KISA 게시판 운영 가이드](docs/kisa-security-board.md)를 따릅니다. 제목 검색 RSS 6개에서 사기 예방 관련 공지를 수집하며, 실제 확인한 공지 28건의 초기 등록 SQL도 제공합니다.

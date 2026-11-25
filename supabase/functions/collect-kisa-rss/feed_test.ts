@@ -1,4 +1,4 @@
-import { canonicalSourceUrl, categoryForTitle, parseFeed } from './feed.ts'
+import { canonicalSourceUrl, categoryForTitle, collectFeeds, parseFeed, SEARCH_TERMS } from './feed.ts'
 
 function equal(actual: unknown, expected: unknown) {
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
@@ -29,6 +29,8 @@ Deno.test('Fraud categories use explicit title evidence', () => {
     ['개인정보 탈취 주의', '개인정보 탈취'], ['투자 사기 주의', '사기 예방'],
     ['VMware 제품 보안 업데이트 권고', null], ['OpenSSL 취약점 보안 업데이트', null],
     ['개인정보 보호 시스템 업데이트', null],
+    ['포티넷 제품 계정정보 탈취에 따른 피해 주의', null],
+    ['큐싱 주의 권고', '피싱'], ['카카오톡 사칭 악성코드 유포 주의권고', '사기 예방'],
   ]) equal(categoryForTitle(title as string), category)
 })
 
@@ -61,4 +63,55 @@ Deno.test('Empty valid channels are accepted; malformed and entity-bearing XML f
     try { parseFeed(xml) } catch { failed = true }
     equal(failed, true)
   }
+})
+
+
+const fixtureNames: Record<string, string> = {
+  '피싱': 'phishing', '스미싱': 'smishing', '사칭': 'impersonation',
+  '탈취': 'theft', '큐싱': 'quishing', '사기': 'fraud',
+}
+
+function readSearchFixture(url: string): Promise<string> {
+  const query = new URL(url)
+  equal(query.origin, 'https://www.boho.or.kr')
+  equal(query.searchParams.get('bbsId'), 'B0000133')
+  equal(query.searchParams.get('searchCnd'), '1')
+  const term = query.searchParams.get('searchWrd')!
+  return Deno.readTextFile(new URL(`./fixtures/kisa-${fixtureNames[term]}-2026-11-25.xml`, import.meta.url))
+}
+
+Deno.test('Real subject-filtered RSS yields 28 unique fraud prevention notices, newest first', async () => {
+  const result = await collectFeeds(readSearchFixture)
+  equal(result.fetched, 48)
+  equal(result.completedQueries, SEARCH_TERMS.length)
+  equal(result.failedQueries, [])
+  equal(result.posts.length, 28)
+  equal(new Set(result.posts.map(post => post.source_url)).size, 28)
+  equal(result.posts[0].title, '코인 탈취를 위한 악성URL 유포에 따른 스미싱 주의')
+  equal(result.posts[0].published_at, '2026-10-16')
+  equal(result.posts.some(post => post.title.includes('공공기관 사칭 해킹메일')), true)
+  equal(result.posts.some(post => post.title.includes('포티넷 제품')), false)
+  equal(result.posts.some(post => post.title.includes('&quot;')), false)
+  equal(result.posts.every(post => post.summary === null), true)
+})
+
+Deno.test('One failed RSS search preserves results from successful searches', async () => {
+  const result = await collectFeeds(url => {
+    if (new URL(url).searchParams.get('searchWrd') === '피싱') throw new Error('Temporary outage')
+    return readSearchFixture(url)
+  })
+  equal(result.completedQueries, 5)
+  equal(result.failedQueries, ['피싱'])
+  equal(result.posts.length > 0, true)
+})
+
+Deno.test('All failed RSS searches fail collection rather than returning an empty success', async () => {
+  let message = ''
+  try { await collectFeeds(() => Promise.reject(new Error('Unavailable'))) }
+  catch (error) { message = (error as Error).message }
+  equal(message, 'All fraud RSS searches failed')
+})
+
+Deno.test('CDATA HTML entities are decoded as text for display', () => {
+  equal(parseFeed(rss(item('피싱 &quot;지원금&quot; 주의'))).posts[0].title, '피싱 "지원금" 주의')
 })
