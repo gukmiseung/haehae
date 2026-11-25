@@ -362,7 +362,45 @@ function RiskLookup({ onNavigate, initialType = 'url', onRecord, onLookupResult,
         </section>
 
         <LookupResult result={result} />
+        <section className="sg-thecheat-card">
+          <div className="sg-thecheat-content">
+            <div className="sg-thecheat-icon" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+            </div>
 
+            <div className="sg-thecheat-text">
+              <span className="sg-thecheat-label">
+                EXTERNAL SERVICE
+              </span>
+              <h2>더치트 사기 피해 이력 조회</h2>
+              <p>
+                더치트에서 전화번호와 계좌번호의 사기 피해 이력을
+                추가로 확인해 보세요.
+              </p>
+            </div>
+          </div>
+
+          <a
+            className="sg-thecheat-link"
+            href="https://thecheat.co.kr/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            더치트 바로가기 ↗
+          </a>
+        </section>
         <section className="sg-risk-bottom">
           <div>
             <h2>의심스러운 대화도 받으셨나요?</h2>

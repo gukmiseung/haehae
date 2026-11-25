@@ -392,3 +392,108 @@
 .sg-risk-bank-field select:invalid {
   color: #a2afc0;
 }
+
+/* 더치트 외부 서비스 연결 */
+
+.sg-thecheat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 25px;
+  padding: 28px 32px;
+  border: 1px solid #e0e8f4;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 8px 28px #243b6108;
+}
+
+.sg-thecheat-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sg-thecheat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #e9f1ff;
+  color: #3473db;
+}
+
+.sg-thecheat-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #3473db;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.sg-thecheat-text h2 {
+  margin: 0 0 8px;
+  color: #243b61;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.sg-thecheat-text p {
+  margin: 0;
+  color: #8190a8;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.sg-thecheat-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 14px 20px;
+  border-radius: 8px;
+  background: #3473db;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.sg-thecheat-link:hover {
+  background: #285fc0;
+  color: #ffffff;
+}
+
+.sg-thecheat-link:focus-visible {
+  outline: 3px solid #9bbdf5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .sg-thecheat-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .sg-thecheat-content {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .sg-thecheat-text h2 {
+    font-size: 16px;
+  }
+
+  .sg-thecheat-link {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
