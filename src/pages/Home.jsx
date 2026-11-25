@@ -106,13 +106,13 @@ function Home({ onNavigate }) {
                 <span className="sg-home-card-icon" aria-hidden="true">
                   ✓
                 </span>
-                <h3>사기수법 가이드</h3>
+                <h3>공식 사기 예방 정보</h3>
               </div>
 
               <p>
-                다양한 피싱 수법을 알아보고
+                KISA의 공식 보안공지에서
                 <br />
-                위험 신호와 예방법을 확인해 보세요.
+                사기 예방 정보를 확인해 보세요.
               </p>
 
               <button

@@ -438,3 +438,27 @@
     height: 32px;
   }
 }
+
+.sg-latest-card .sg-latest-post-meta {
+  min-height: 0;
+  color: #8492a8;
+}
+
+.sg-latest-status {
+  padding: 20px;
+  border: 1px solid #e1e8f3;
+  border-radius: 11px;
+  color: #71819b;
+  background: #f5f7ff;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.sg-latest-status button {
+  border: 0;
+  border-radius: 25px;
+  padding: 9px 17px;
+  background: #506df0;
+  color: #fff;
+  cursor: pointer;
+}

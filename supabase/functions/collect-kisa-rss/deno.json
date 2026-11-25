@@ -1,0 +1,7 @@
+{
+  "nodeModulesDir": "none",
+  "lock": true,
+  "tasks": {
+    "test": "deno test --allow-read=./fixtures feed_test.ts"
+  }
+}

@@ -2,3 +2,7 @@ project_id = "rhmqkeilrvorlplhueqv"
 
 [functions.analyze-conversation]
 verify_jwt = true
+
+[functions.collect-kisa-rss]
+# This function requires a dedicated x-cron-secret, validated before RSS/DB access.
+verify_jwt = false

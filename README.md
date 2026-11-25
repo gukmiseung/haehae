@@ -37,3 +37,7 @@ If you are developing a production application, we recommend using TypeScript wi
 4. `npm ci` 후 `npm run dev`를 실행합니다. 같은 이메일로 가입, 확인 링크 열기, 로그인, 새로고침, 로그아웃을 확인합니다.
 
 계정은 Supabase Auth에 생성되고 가입 화면의 이름은 사용자 메타데이터에 저장됩니다. 인증을 위해 별도 테이블이나 마이그레이션은 필요하지 않습니다. 로그인 상태 유지를 선택하면 브라우저를 닫았다 열어도 세션을 복원하며, 선택하지 않으면 해당 탭의 세션 저장소를 사용합니다.
+
+## 공식 사기 예방 정보
+
+기존 사기수법 가이드는 KISA 보안공지를 Supabase에서 읽는 게시판으로 연결됩니다. 테이블 생성, Edge Function 배포, Vault 비밀값 및 매시간 Cron 설정은 [KISA 게시판 운영 가이드](docs/kisa-security-board.md)를 따릅니다. 현재 RSS가 제공하는 공지 중 관련 제목만 수집하며, 관련 글이 없으면 빈 목록을 표시합니다.

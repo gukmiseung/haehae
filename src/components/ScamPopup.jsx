@@ -8,7 +8,6 @@ const scams = [
     description:
       '배송 주소 오류를 핑계로 문자 속 링크를 누르도록 유도하는 사기 수법입니다.',
     warning: '출처가 불분명한 링크 · 개인정보 입력 요구',
-    scamId: 2,
   },
   {
     category: '최신 사기수법 안내',
@@ -16,7 +15,6 @@ const scams = [
     description:
       '금융기관 직원을 사칭해 계좌 이상을 이유로 송금이나 개인정보를 요구하는 수법입니다.',
     warning: '안전 계좌 안내 · 비밀번호 및 인증번호 요구',
-    scamId: 1,
   },
   {
     category: '최신 사기수법 안내',
@@ -24,7 +22,6 @@ const scams = [
     description:
       '안전결제를 핑계로 플랫폼 외부의 가짜 결제 사이트 접속을 유도하는 수법입니다.',
     warning: '외부 결제 링크 · 별도 계좌 입금 요구',
-    scamId: 3,
   },
 ]
 
@@ -75,12 +72,8 @@ function ScamPopup({ onNavigate }) {
   }
 
   const handleDetailClick = () => {
-    const currentScam = scams[currentIndex]
-
     setIsOpen(false)
-    onNavigate('latestScams', {
-      scamId: currentScam.scamId,
-    })
+    onNavigate('latestScams')
   }
 
   if (!isOpen) return null
@@ -180,7 +173,7 @@ function ScamPopup({ onNavigate }) {
           className="sg-scam-popup-detail"
           onClick={handleDetailClick}
         >
-          자세히 알아보기 <span aria-hidden="true">→</span>
+          공식 예방 정보 보기 <span aria-hidden="true">→</span>
         </button>
 
         <footer className="sg-scam-popup-footer">
