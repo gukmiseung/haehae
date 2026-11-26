@@ -115,6 +115,12 @@
   font-weight: 700;
 }
 
+.sg-latest-card h3,
+.sg-latest-detail-title {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
 .sg-latest-card h3 {
   margin: 10px 0 9px;
   color: #263d63;

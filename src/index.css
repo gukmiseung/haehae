@@ -1,6 +1,6 @@
 
 :root {
-  font-family: Arial, sans-serif;
+  font-family: 'Pretendard GOV Variable', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   color: #202b42;
   background: #ffffff;
   font-synthesis: none;
@@ -19,6 +19,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
