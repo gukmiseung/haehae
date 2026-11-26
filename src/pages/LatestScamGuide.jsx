@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import KisaSummary from '../components/KisaSummary'
 import './LatestScamGuide.css'
 
-const categories = ['전체', '피싱', '스미싱', '보이스피싱', '기관 사칭', '개인정보 탈취', '사기 예방']
+const categories = ['전체', '피싱', '스미싱', '보이스피싱', '기관 사칭', '사기 예방']
 
 function LatestScamGuide({ onNavigate, initialScamId }) {
   const [posts, setPosts] = useState([])
