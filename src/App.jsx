@@ -45,6 +45,12 @@ function App() {
 
   useEffect(() => {
     const onPopState = (event) => {
+      if (event.state?.scamGuide) {
+        setIsMyPage(false)
+        setPage('latestScams')
+        return
+      }
+
       const pathPage = getPageFromPath()
       setIsMyPage(pathPage === 'mypage')
       if (pathPage === 'mypage') return

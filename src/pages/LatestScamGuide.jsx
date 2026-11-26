@@ -20,6 +20,43 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
   const listScroll = useRef(null)
 
   useEffect(() => {
+    function handlePopState(event) {
+      if (event.state?.scamGuide) {
+        setSelectedId(event.state.scamPostId ?? null)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  function openPost(postId) {
+    listScroll.current = window.scrollY
+
+    window.history.replaceState({
+      ...window.history.state,
+      scamGuide: true,
+      scamPostId: null,
+    }, '')
+
+    window.history.pushState({
+      scamGuide: true,
+      scamPostId: postId,
+    }, '')
+
+    setSelectedId(postId)
+  }
+
+  function backToList() {
+    if (window.history.state?.scamPostId === selectedId &&
+        window.history.state?.scamGuide) {
+      window.history.back()
+    } else {
+      setSelectedId(null)
+    }
+  }
+
+  useEffect(() => {
     let active = true
     let fetching = false
     let controller
@@ -114,7 +151,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
             </a>
           </div>
           <div className="sg-latest-detail-back-wrap">
-            <button type="button" className="sg-latest-detail-back" onClick={() => setSelectedId(null)}>
+            <button type="button" className="sg-latest-detail-back" onClick={backToList}>
               ← 공식 사기 예방 정보 목록으로
             </button>
           </div>
@@ -168,10 +205,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
               <h3>{post.title}</h3>
               {post.summary && <p>{post.summary}</p>}
               <p className="sg-latest-post-meta">{post.source} · {post.published_at || '게시 날짜 미제공'}</p>
-              <button type="button" aria-label={`${post.title} 자세히 보기`} onClick={() => {
-                listScroll.current = window.scrollY
-                setSelectedId(post.id)
-              }}>
+              <button type="button" aria-label={`${post.title} 자세히 보기`} onClick={() => openPost(post.id)}>
                 자세히 보기 <span>→</span>
               </button>
             </article>
