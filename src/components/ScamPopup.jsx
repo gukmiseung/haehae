@@ -13,14 +13,22 @@ function getToday() {
   return `${year}-${month}-${day}`
 }
 
+function getPopupTitle(title) {
+  const maxLength = 32
+  if (title.length <= maxLength) return title
+  return `${title.slice(0, maxLength).trimEnd()}…`
+}
+
 function PopupSummary({ post }) {
   const [excerpt, setExcerpt] = useState('')
   const [loading, setLoading] = useState(true)
+  const [timedOut, setTimedOut] = useState(false)
   useEffect(() => {
     if (post.summary) return
     const id = new URL(post.source_url).searchParams.get('nttId')
     if (!id) return
     const controller = new AbortController()
+    const loadingTimeout = setTimeout(() => setTimedOut(true), 1200)
     async function load() {
       try {
         const response = await fetch('/api/kisa-summary?id=' + encodeURIComponent(id), { signal: controller.signal })
@@ -30,13 +38,17 @@ function PopupSummary({ post }) {
       } catch {
         // The detail button remains available when the excerpt cannot be loaded.
       } finally {
+        clearTimeout(loadingTimeout)
         if (!controller.signal.aborted) setLoading(false)
       }
     }
     void load()
-    return () => controller.abort()
+    return () => {
+      clearTimeout(loadingTimeout)
+      controller.abort()
+    }
   }, [post.summary, post.source_url])
-  return <p>{post.summary || excerpt || (loading ? '불러오는 중입니다…' : '요약을 불러오지 못했습니다.')}</p>
+  return <p>{post.summary || excerpt || (loading && !timedOut ? '불러오는 중입니다…' : '요약을 불러오지 못했습니다.')}</p>
 }
 
 function ScamPopup({ onNavigate }) {
@@ -156,7 +168,7 @@ function ScamPopup({ onNavigate }) {
         </div>
 
         <div className="sg-scam-popup-intro">
-          <h2 id="sg-scam-popup-title">{currentScam.title}</h2>
+          <h2 id="sg-scam-popup-title">{getPopupTitle(currentScam.title)}</h2>
           <p>{[currentScam.category, 'KISA', currentScam.published_at?.slice(0, 10)].filter(Boolean).join(' · ')}</p>
         </div>
 
