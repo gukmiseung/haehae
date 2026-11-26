@@ -59,11 +59,6 @@ function Login({ onNavigate }) {
             SAFE GUARD에 오신 것을 환영합니다.
           </p>
 
-          <div className="sg-login-guest-notice">
-            <p>
-              메시지 검사는 로그인 없이 이용할 수 있어요.
-            </p>
-          </div>
 
           <form onSubmit={handleSubmit}>
             <label htmlFor="login-email">이메일</label>
