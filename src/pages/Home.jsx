@@ -1,12 +1,9 @@
 
 import './Home.css'
-import ScamPopup from '../components/ScamPopup'
 
 function Home({ onNavigate }) {
   return (
     <main className="sg-home">
-      <ScamPopup onNavigate={onNavigate} />
-
       <section className="sg-home-hero">
         <div className="sg-home-container sg-home-hero-inner">
           <div className="sg-home-hero-text">

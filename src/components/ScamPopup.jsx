@@ -173,7 +173,7 @@ function ScamPopup({ onNavigate }) {
           className="sg-scam-popup-detail"
           onClick={handleDetailClick}
         >
-          공식 예방 정보 보기 <span aria-hidden="true">→</span>
+          공식 사기 예방 정보 보기 <span aria-hidden="true">→</span>
         </button>
 
         <footer className="sg-scam-popup-footer">
