@@ -146,19 +146,7 @@ function ScamPopup({ onNavigate }) {
         </header>
 
         <div className="sg-scam-popup-shield" aria-hidden="true">
-          <svg viewBox="0 0 48 52" fill="none">
-            <path
-              d="M24 2L44 10V25C44 38 35 46 24 50C13 46 4 38 4 25V10L24 2Z"
-              fill="currentColor"
-            />
-            <path
-              d="M14 25L21 32L35 17"
-              stroke="white"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <img className="sg-brand-image" src="/favicon.svg" alt="" aria-hidden="true" />
         </div>
 
         <div className="sg-scam-popup-intro">

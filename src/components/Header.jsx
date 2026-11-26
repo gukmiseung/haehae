@@ -17,7 +17,7 @@ function Header({ onNavigate, activePage, session, onSignOut, signingOut, signOu
     <header className="sg-header">
       <div className="sg-header-inner">
         <a className="sg-header-logo" href="/" onClick={(event) => follow(event, 'home')}>
-          <span className="sg-header-shield" aria-hidden="true">✓</span>
+          <img className="sg-header-shield sg-brand-image" src="/favicon.svg" alt="" aria-hidden="true" />
           <span>SAFE GUARD</span>
         </a>
 
