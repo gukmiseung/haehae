@@ -107,6 +107,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
 
 Gemini API 키 등 서버 측 비밀 키는 Supabase 환경 변수에서 별도로 관리합니다.
 
+비밀번호 재설정 메일은 `https://haehae.vercel.app/`로 돌아옵니다. Supabase Auth의 Redirect URLs에 끝의 `/`를 포함한 공개 주소를 등록합니다. 일반 가입자에게 메일을 보내려면 [Custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)를 설정합니다.
+
 ### 개발 서버 실행
 
 ```bash

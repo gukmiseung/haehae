@@ -15,7 +15,7 @@ import Footer from './components/Footer'
 import ScamPopup from './components/ScamPopup'
 import LoginRequiredDialog from './components/LoginRequiredDialog'
 import { saveInspectionRecord } from './lib/inspectionHistory'
-import { supabase } from './lib/supabase'
+import { isPasswordRecoveryRedirect, passwordRecoveryPath, supabase } from './lib/supabase'
 
 const pagePaths = {
   login: '/login',
@@ -25,8 +25,17 @@ const pagePaths = {
 }
 
 function getPageFromPath() {
+  if (isPasswordRecoveryRedirect()) return 'resetPassword'
   const path = window.location.pathname.replace(/\/$/, '')
   return Object.keys(pagePaths).find((page) => pagePaths[page] === path) || 'home'
+}
+
+function clearPasswordRecovery() {
+  if (window.history.state?.passwordRecoveryUserId) {
+    const url = new URL(window.location.href)
+    url.searchParams.delete('reset-password')
+    window.history.replaceState({ ...window.history.state, passwordRecoveryUserId: null }, '', url)
+  }
 }
 
 function App() {
@@ -36,6 +45,7 @@ function App() {
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState('')
   const [resetEmail, setResetEmail] = useState('')
+  const [recoveryUserId, setRecoveryUserId] = useState(() => window.history.state?.passwordRecoveryUserId ?? null)
   const [riskType, setRiskType] = useState('url')
   const [latestScamId, setLatestScamId] = useState(null)
   const [activeRecord, setActiveRecord] = useState(null)
@@ -43,6 +53,7 @@ function App() {
   const [historySaveErrorUserId, setHistorySaveErrorUserId] = useState(null)
   const gateOrigin = useRef(null)
   const userId = session?.user?.id ?? null
+  const recoveringPassword = userId !== null && userId === recoveryUserId
   const currentRecord = activeRecord?.userId === userId ? activeRecord : null
 
   useEffect(() => {
@@ -66,13 +77,30 @@ function App() {
 
   useEffect(() => {
     if (!supabase) return
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    // Start recovery here so the app subscribes before the SDK emits the recovery event.
+    void supabase.auth.initialize()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession)
+      if (event === 'PASSWORD_RECOVERY' && nextSession?.user) {
+        const passwordRecoveryUserId = nextSession.user.id
+        window.history.replaceState({ passwordRecoveryUserId }, '', passwordRecoveryPath)
+        setRecoveryUserId(passwordRecoveryUserId)
+        setIsMyPage(false)
+        setPage('resetPassword')
+      } else if (event === 'SIGNED_OUT') {
+        clearPasswordRecovery()
+        setRecoveryUserId(null)
+      }
     })
     return () => subscription.unsubscribe()
   }, [])
 
   const navigate = (nextPage, options = {}) => {
+    if (nextPage !== 'resetPassword' && recoveryUserId !== null) {
+      clearPasswordRecovery()
+      setRecoveryUserId(null)
+    }
+
     if (nextPage === 'mypage') {
       if (isMyPage) return
       const id = crypto.randomUUID()
@@ -181,7 +209,18 @@ function App() {
   } else if (page === 'signup' && !session) {
     content = <Signup onNavigate={navigate} />
   } else if (page === 'resetPassword') {
-    content = <PasswordReset initialEmail={resetEmail} onBack={() => navigate('login')} />
+    content = (
+      <PasswordReset
+        key={recoveringPassword ? recoveryUserId : 'request'}
+        initialEmail={resetEmail}
+        recovering={recoveringPassword}
+        checkingLink={isPasswordRecoveryRedirect() && session === undefined}
+        invalidLink={isPasswordRecoveryRedirect() && session !== undefined && !recoveringPassword}
+        onPasswordChanged={clearPasswordRecovery}
+        backHref={session ? '/' : pagePaths.login}
+        onBack={() => navigate(session ? 'home' : 'login')}
+      />
+    )
   } else if (page === 'risk') {
     content = (
       <RiskLookup
