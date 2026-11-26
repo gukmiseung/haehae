@@ -4,15 +4,6 @@ import './ScamPopup.css'
 
 const STORAGE_KEY = 'safeGuardScamPopupHiddenDate'
 
-function getToday() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
-}
-
 const excerpts = new Map()
 const pendingExcerpts = new Map()
 
@@ -41,7 +32,7 @@ function ScamPopup({ onNavigate }) {
   const [scams, setScams] = useState([])
   const [isOpen, setIsOpen] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) !== getToday()
+      return localStorage.getItem(STORAGE_KEY) !== new Date().toLocaleDateString()
     } catch {
       return true
     }
@@ -93,7 +84,7 @@ function ScamPopup({ onNavigate }) {
   const closePopup = () => {
     if (hideToday) {
       try {
-        localStorage.setItem(STORAGE_KEY, getToday())
+        localStorage.setItem(STORAGE_KEY, new Date().toLocaleDateString())
       } catch {
         // 브라우저 저장 기능을 사용할 수 없는 경우 팝업만 닫습니다.
       }

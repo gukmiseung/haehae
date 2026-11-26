@@ -125,6 +125,12 @@ function App() {
       const { error } = await supabase.auth.signOut({ scope: 'local' })
       if (error) throw error
       setSession(null)
+      try {
+        localStorage.removeItem('safeGuardScamPopupHiddenDate')
+        localStorage.removeItem('safeGuardScamPopupHiddenUntil')
+      } catch {
+        // 로그아웃을 계속 진행합니다.
+      }
       setActiveRecord(null)
       setViewingHistory(false)
       navigate('home')
