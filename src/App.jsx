@@ -14,6 +14,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import ScamPopup from './components/ScamPopup'
 import LoginRequiredDialog from './components/LoginRequiredDialog'
+import { saveInspectionRecord } from './lib/inspectionHistory'
 import { supabase } from './lib/supabase'
 
 const pagePaths = {
@@ -37,11 +38,12 @@ function App() {
   const [resetEmail, setResetEmail] = useState('')
   const [riskType, setRiskType] = useState('url')
   const [latestScamId, setLatestScamId] = useState(null)
-  const [records, setRecords] = useState([])
   const [activeRecord, setActiveRecord] = useState(null)
   const [viewingHistory, setViewingHistory] = useState(false)
-  const nextRecordId = useRef(0)
+  const [historySaveErrorUserId, setHistorySaveErrorUserId] = useState(null)
   const gateOrigin = useRef(null)
+  const userId = session?.user?.id ?? null
+  const currentRecord = activeRecord?.userId === userId ? activeRecord : null
 
   useEffect(() => {
     const onPopState = (event) => {
@@ -123,7 +125,6 @@ function App() {
       const { error } = await supabase.auth.signOut({ scope: 'local' })
       if (error) throw error
       setSession(null)
-      setRecords([])
       setActiveRecord(null)
       setViewingHistory(false)
       navigate('home')
@@ -148,11 +149,14 @@ function App() {
     const record = {
       risk: 'pending',
       ...data,
-      userId: session?.user?.id ?? null,
-      id: `session-${++nextRecordId.current}`,
+      userId,
+      id: crypto.randomUUID(),
       date: localDate.toISOString().slice(0, 16),
+      createdAt: now.getTime(),
     }
-    setRecords((previous) => [record, ...previous])
+    if (userId) {
+      saveInspectionRecord(record).catch(() => setHistorySaveErrorUserId(userId))
+    }
     return record
   }
 
@@ -184,10 +188,10 @@ function App() {
         }}
       />
     )
-  } else if (page === 'lookupResult' || (page === 'riskResult' && activeRecord?.lookupResult?.suspicious !== undefined)) {
-    content = <LookupOutcome type={activeRecord.type} result={activeRecord.lookupResult} onNavigate={navigate} />
-  } else if (page === 'riskResult') {
-    content = <RiskLookup savedRecord={activeRecord} onNavigate={navigate} />
+  } else if (currentRecord && (page === 'lookupResult' || (page === 'riskResult' && currentRecord.lookupResult?.suspicious !== undefined))) {
+    content = <LookupOutcome type={currentRecord.type} result={currentRecord.lookupResult} onNavigate={navigate} />
+  } else if (page === 'riskResult' && currentRecord) {
+    content = <RiskLookup savedRecord={currentRecord} onNavigate={navigate} />
   } else if (page === 'analysis') {
     content = (
       <AiAnalysis
@@ -206,19 +210,19 @@ function App() {
         }}
       />
     )
-  } else if (page === 'result') {
+  } else if (page === 'result' && currentRecord) {
     content = (
       <AiResult
-        record={activeRecord}
+        record={currentRecord}
         onBack={() => navigate('analysis')}
         onNext={() => navigate('guide')}
         onBackToHistory={viewingHistory ? () => navigate('mypage') : undefined}
       />
     )
-  } else if (page === 'guide') {
+  } else if (page === 'guide' && currentRecord) {
     content = (
       <SafetyGuide
-        record={activeRecord}
+        record={currentRecord}
         onBack={() => navigate('result')}
       />
     )
@@ -260,13 +264,10 @@ function App() {
       {isMyPage && session !== undefined && (
         <>
           <MyPage
-            preview={!session}
-            key={session?.user?.id ?? 'guest'}
-            records={session?.user?.id
-              ? records.filter((record) => record.userId === session.user.id)
-              : []}
+            key={userId ?? 'guest'}
+            userId={userId}
+            hasSaveError={userId !== null && userId === historySaveErrorUserId}
             onOpenRecord={openRecord}
-            onDeleteRecord={(id) => setRecords((previous) => previous.filter((record) => record.id !== id))}
           />
           {!session && <LoginRequiredDialog onLogin={() => navigate('login')} onDismiss={dismissMyPageGate} />}
         </>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { conversationRiskLabels } from '../lib/conversationAnalysis'
+import { deleteInspectionRecord, readInspectionHistory } from '../lib/inspectionHistory'
 import './MyPage.css'
 
 const typeLabels = {
@@ -16,49 +17,28 @@ const riskLabels = {
   unreported: '신고 이력 없음',
 }
 
-const exampleRecords = [
-  { id: 1, type: 'conversation', title: '금융기관 사칭 의심 대화', date: '2026-11-20T14:32', risk: 'high' },
-  { id: 2, type: 'url', title: '택배 배송 안내 링크', date: '2026-11-18T09:17', risk: 'caution' },
-  { id: 3, type: 'phone', title: '010-****-4832', date: '2026-11-15T19:04', risk: 'unreported' },
-  { id: 4, type: 'account', title: '***-****-**123', date: '2026-11-13T12:11', risk: 'unreported' },
-  { id: 5, type: 'conversation', title: '가족 사칭 송금 요청', date: '2026-11-11T16:05', risk: 'high' },
-  { id: 6, type: 'url', title: '공공기관 안내 문자 링크', date: '2026-11-09T10:42', risk: 'caution' },
-  { id: 7, type: 'account', title: '***-****-**271', date: '2026-11-07T13:10', risk: 'unreported' },
-  { id: 8, type: 'phone', title: '010-****-6981', date: '2026-11-05T11:20', risk: 'unreported' },
-  { id: 9, type: 'url', title: '이벤트 당첨 안내 링크', date: '2026-11-03T15:35', risk: 'caution' },
-  { id: 10, type: 'conversation', title: '저금리 대출 상담 메시지', date: '2026-11-02T09:30', risk: 'high' },
-  { id: 11, type: 'phone', title: '010-****-0217', date: '2026-11-01T17:15', risk: 'unreported' },
-  { id: 12, type: 'account', title: '***-****-**890', date: '2026-11-01T08:45', risk: 'unreported' },
-].map((record) => ({ ...record, isExample: true }))
-
 const pageSize = 4
-const storageKey = 'safeguard-dismissed-example-records'
-
-function readDismissedIds() {
-  try {
-    const ids = JSON.parse(window.localStorage.getItem(storageKey))
-    return Array.isArray(ids) ? ids : []
-  } catch {
-    return []
-  }
-}
 
 function RecordDate({ date }) {
   const [day, time] = date.split('T')
   return <time dateTime={date}>{day.replaceAll('-', '.')} &nbsp;{time}</time>
 }
 
-function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
-  const [dismissedIds, setDismissedIds] = useState(readDismissedIds)
+function MyPage({ userId, hasSaveError, onOpenRecord }) {
+  const [history, setHistory] = useState({ status: 'loading', records: [] })
+  const [loadAttempt, setLoadAttempt] = useState(0)
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [recordToDelete, setRecordToDelete] = useState(null)
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
   const [announcement, setAnnouncement] = useState('')
   const dialogRef = useRef(null)
   const headingRef = useRef(null)
 
-  const allRecords = preview ? [] : records
+  const preview = !userId
+  const allRecords = history.records
   const keyword = query.trim().toLowerCase()
   const filteredRecords = allRecords.filter(({ type, title }) =>
     (filter === 'all' || type === filter) &&
@@ -70,27 +50,48 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
   const visibleRecords = filteredRecords.slice(firstIndex, firstIndex + pageSize)
 
   useEffect(() => {
+    if (!userId) return
+
+    let active = true
+    readInspectionHistory(userId).then(
+      (records) => {
+        if (active) setHistory({ status: 'ready', records })
+      },
+      () => {
+        if (active) setHistory({ status: 'error', records: [] })
+      },
+    )
+    return () => { active = false }
+  }, [userId, loadAttempt])
+
+  useEffect(() => {
     const element = dialogRef.current
     if (recordToDelete && !element.open) element.showModal()
   }, [recordToDelete])
 
-  function deleteRecord(record) {
-    if (record.isExample) {
-      const nextIds = [...dismissedIds, record.id]
-      setDismissedIds(nextIds)
-      try {
-        window.localStorage.setItem(storageKey, JSON.stringify(nextIds))
-      } catch {
-        // Keep the deletion in the current view when browser storage is unavailable.
-      }
-    } else {
-      onDeleteRecord(record.id)
+  async function deleteRecord(record) {
+    setDeleting(true)
+    setDeleteError('')
+    try {
+      await deleteInspectionRecord(userId, record.id)
+      setHistory((previous) => ({
+        ...previous,
+        records: previous.records.filter(({ id }) => id !== record.id),
+      }))
+      setPage(Math.min(visiblePage, Math.max(1, Math.ceil((filteredRecords.length - 1) / pageSize))))
+      setAnnouncement(`${record.title} 기록을 삭제했습니다.`)
+      dialogRef.current?.close()
+      headingRef.current?.focus()
+    } catch {
+      setDeleteError('검사 기록을 삭제하지 못했습니다. 다시 시도해 주세요.')
+    } finally {
+      setDeleting(false)
     }
+  }
 
-    setPage(Math.min(visiblePage, Math.max(1, Math.ceil((filteredRecords.length - 1) / pageSize))))
-    setAnnouncement(`${record.title} 기록을 삭제했습니다.`)
-    dialogRef.current.close()
-    headingRef.current.focus()
+  function reloadHistory() {
+    setHistory({ status: 'loading', records: [] })
+    setLoadAttempt((attempt) => attempt + 1)
   }
 
   return (
@@ -104,8 +105,9 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
         <section className="sg-my-panel" aria-labelledby="record-heading">
           <h2 id="record-heading" tabIndex={-1} ref={headingRef}>내 검사 기록</h2>
           <p className="sg-my-description">
-            {preview ? '저장된 검사 결과를 다시 확인할 수 있습니다.' : '내가 진행한 검사 기록을 다시 확인할 수 있습니다.'}
+            {preview ? '저장된 검사 결과를 다시 확인할 수 있습니다.' : '이 브라우저에 저장된 내 검사 기록을 다시 확인할 수 있습니다.'}
           </p>
+          {hasSaveError && <p className="sg-my-description" role="alert">일부 검사 기록을 이 브라우저에 저장하지 못했습니다.</p>}
 
           <div className="sg-my-controls">
             <div className="sg-my-filters" role="group" aria-label="검사 유형 필터">
@@ -140,7 +142,7 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
             </label>
           </div>
 
-          <div className="sg-my-table-frame">
+          <div className="sg-my-table-frame" aria-busy={!preview && history.status === 'loading'}>
             <table className="sg-my-table" aria-labelledby="record-heading" role="table">
               <thead>
                 <tr>
@@ -178,7 +180,10 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
                         className="sg-my-delete-button"
                         type="button"
                         aria-label={`${record.title} 기록 삭제`}
-                        onClick={() => setRecordToDelete(record)}
+                        onClick={() => {
+                          setDeleteError('')
+                          setRecordToDelete(record)
+                        }}
                       >
                         기록 삭제
                       </button>
@@ -187,7 +192,16 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
                 ))}
               </tbody>
             </table>
-            {visibleRecords.length === 0 && (
+            {!preview && history.status === 'loading' && (
+              <p className="sg-my-empty" role="status">검사 기록을 불러오는 중입니다.</p>
+            )}
+            {history.status === 'error' && (
+              <div className="sg-my-empty">
+                <p role="alert">저장된 검사 기록을 불러오지 못했습니다.</p>
+                <button type="button" className="sg-my-close-button" onClick={reloadHistory}>다시 불러오기</button>
+              </div>
+            )}
+            {(preview || history.status === 'ready') && visibleRecords.length === 0 && (
               <p className="sg-my-empty" role="status">
                 {allRecords.length === 0 ? '저장된 검사 기록이 없습니다.' : '조건에 맞는 검사 기록이 없습니다.'}
               </p>
@@ -223,16 +237,18 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
         className="sg-my-dialog"
         ref={dialogRef}
         aria-labelledby="record-dialog-heading"
+        onCancel={(event) => { if (deleting) event.preventDefault() }}
         onClose={() => setRecordToDelete(null)}
       >
         {recordToDelete && (
           <>
             <h2 id="record-dialog-heading">검사 기록을 삭제할까요?</h2>
             <p>‘{recordToDelete.title}’ 기록이 목록에서 삭제됩니다.</p>
+            {deleteError && <p role="alert">{deleteError}</p>}
             <form method="dialog" className="sg-my-dialog-actions">
-              <button type="submit" className="sg-my-close-button">취소</button>
-              <button type="button" className="sg-my-delete-button" onClick={() => deleteRecord(recordToDelete)}>
-                삭제
+              <button type="submit" className="sg-my-close-button" disabled={deleting}>취소</button>
+              <button type="button" className="sg-my-delete-button" disabled={deleting} onClick={() => deleteRecord(recordToDelete)}>
+                {deleting ? '삭제 중…' : '삭제'}
               </button>
             </form>
           </>

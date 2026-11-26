@@ -12,7 +12,7 @@ npx supabase db push
 npx supabase functions deploy analyze-conversation --project-ref rhmqkeilrvorlplhueqv
 ```
 
-`npm run dev`로 앱을 열고 **AI 위험 분석하기**를 누르면, 텍스트 및 PNG·JPG 캡처가 분석을 위해 Google Gemini로 전송됩니다. 성공한 분석은 현재 탭의 검사 기록에서 다시 볼 수 있습니다. 비회원 호출의 프로젝트 전체 요청 한도는 분당 20건, UTC 기준 일일 200건입니다.
+`npm run dev`로 앱을 열고 **AI 위험 분석하기**를 누르면, 텍스트 및 PNG·JPG 캡처가 분석을 위해 Google Gemini로 전송됩니다. 로그인한 상태에서 완료한 검사는 현재 브라우저에 계정별로 저장되어, 다시 로그인한 뒤 마이페이지에서 볼 수 있습니다. 비회원 호출의 프로젝트 전체 요청 한도는 분당 20건, UTC 기준 일일 200건입니다.
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
