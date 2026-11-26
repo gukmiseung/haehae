@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     if (!response.ok) throw new Error('Source unavailable')
     const lines = extractSummary(await response.text())
     res.setHeader('Content-Type', 'application/json; charset=utf-8')
-    res.setHeader('Cache-Control', 'public, s-maxage=3600')
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=3600')
     res.end(JSON.stringify({ lines }))
   } catch {
     res.statusCode = 502
