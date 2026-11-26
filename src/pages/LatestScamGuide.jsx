@@ -3,7 +3,6 @@ import { supabase } from '../lib/supabase'
 import './LatestScamGuide.css'
 
 const categories = ['전체', '피싱', '스미싱', '보이스피싱', '기관 사칭', '개인정보 탈취', '사기 예방']
-const noSummary = '소개가 제공되지 않은 공지입니다. 자세한 내용은 KISA 원문에서 확인해 주세요.'
 
 function LatestScamGuide({ onNavigate, initialScamId }) {
   const [posts, setPosts] = useState([])
@@ -96,8 +95,15 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
             {selectedPost.source} · {selectedPost.published_at || '게시 날짜 미제공'}
           </p>
           <section className="sg-latest-detail-panel sg-latest-detail-intro">
-            <h2>공지 소개</h2>
-            <p>{selectedPost.summary || noSummary}</p>
+            <h2>KISA 공지 원문</h2>
+            <iframe
+              key={selectedPost.source_url}
+              className="sg-latest-original"
+              title={`KISA 원문 · ${selectedPost.title}`}
+              src={`${selectedPost.source_url}#container`}
+              sandbox="allow-scripts allow-same-origin allow-downloads"
+              referrerPolicy="no-referrer"
+            />
           </section>
           <div className="sg-latest-source">
             <p>출처 · KISA 보호나라</p>
@@ -158,7 +164,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
             <article className="sg-latest-card" key={post.id}>
               <span className="sg-latest-category">{post.category}</span>
               <h3>{post.title}</h3>
-              <p>{post.summary || noSummary}</p>
+              {post.summary && <p>{post.summary}</p>}
               <p className="sg-latest-post-meta">{post.source} · {post.published_at || '게시 날짜 미제공'}</p>
               <button type="button" aria-label={`${post.title} 자세히 보기`} onClick={() => {
                 listScroll.current = window.scrollY

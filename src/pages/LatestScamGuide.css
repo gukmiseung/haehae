@@ -462,3 +462,13 @@
   color: #fff;
   cursor: pointer;
 }
+
+.sg-latest-original {
+  display: block;
+  width: 100%;
+  height: 75vh;
+  height: 75svh;
+  margin-top: 12px;
+  border: 0;
+  background: white;
+}
