@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import KisaSummary from '../components/KisaSummary'
 import './LatestScamGuide.css'
 
 const categories = ['전체', '피싱', '스미싱', '보이스피싱', '기관 사칭', '개인정보 탈취', '사기 예방']
@@ -94,6 +95,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
           <p className="sg-latest-detail-description">
             {selectedPost.source} · {selectedPost.published_at || '게시 날짜 미제공'}
           </p>
+          <KisaSummary key={selectedPost.id} post={selectedPost} />
           <section className="sg-latest-detail-panel sg-latest-detail-intro">
             <h2>KISA 공지 원문</h2>
             <iframe
