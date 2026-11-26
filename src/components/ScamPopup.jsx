@@ -15,6 +15,7 @@ function getToday() {
 
 function PopupSummary({ post }) {
   const [excerpt, setExcerpt] = useState('')
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (post.summary) return
     const id = new URL(post.source_url).searchParams.get('nttId')
@@ -28,12 +29,14 @@ function PopupSummary({ post }) {
         if (!controller.signal.aborted) setExcerpt(data.lines?.[0] || '')
       } catch {
         // The detail button remains available when the excerpt cannot be loaded.
+      } finally {
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
     void load()
     return () => controller.abort()
   }, [post.summary, post.source_url])
-  return <p>{post.summary || excerpt || '아래 버튼에서 KISA 공지 내용을 확인하세요.'}</p>
+  return <p>{post.summary || excerpt || (loading ? '불러오는 중입니다…' : '요약을 불러오지 못했습니다.')}</p>
 }
 
 function ScamPopup({ onNavigate }) {
@@ -160,7 +163,7 @@ function ScamPopup({ onNavigate }) {
         <div className="sg-scam-popup-warning">
           <strong>
             <span aria-hidden="true">!</span>
-            공지 요약
+            공지 한 눈에 보기
           </strong>
           <PopupSummary key={currentScam.id} post={currentScam} />
         </div>
