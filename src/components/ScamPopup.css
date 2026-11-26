@@ -83,7 +83,7 @@
 }
 
 .sg-scam-popup-intro h2 {
-  max-width: 82%;
+  width: min(100%, 500px);
   margin: 0 auto 11px;
   color: #263d61;
   font-size: 25px;
