@@ -58,9 +58,7 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
   const dialogRef = useRef(null)
   const headingRef = useRef(null)
 
-  const allRecords = preview
-    ? exampleRecords
-    : [...records, ...exampleRecords.filter(({ id }) => !dismissedIds.includes(id))]
+  const allRecords = preview ? [] : records
   const keyword = query.trim().toLowerCase()
   const filteredRecords = allRecords.filter(({ type, title }) =>
     (filter === 'all' || type === filter) &&
@@ -106,7 +104,7 @@ function MyPage({ records, onOpenRecord, onDeleteRecord, preview = false }) {
         <section className="sg-my-panel" aria-labelledby="record-heading">
           <h2 id="record-heading" tabIndex={-1} ref={headingRef}>내 검사 기록</h2>
           <p className="sg-my-description">
-            {preview ? '저장된 검사 결과를 다시 확인할 수 있습니다.' : '이 탭에서 진행한 검사와 예시 검사 기록을 다시 확인할 수 있습니다.'}
+            {preview ? '저장된 검사 결과를 다시 확인할 수 있습니다.' : '내가 진행한 검사 기록을 다시 확인할 수 있습니다.'}
           </p>
 
           <div className="sg-my-controls">

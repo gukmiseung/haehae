@@ -45,6 +45,12 @@ function App() {
 
   useEffect(() => {
     const onPopState = (event) => {
+      if (event.state?.scamGuide) {
+        setIsMyPage(false)
+        setPage('latestScams')
+        return
+      }
+
       const pathPage = getPageFromPath()
       setIsMyPage(pathPage === 'mypage')
       if (pathPage === 'mypage') return
@@ -142,6 +148,7 @@ function App() {
     const record = {
       risk: 'pending',
       ...data,
+      userId: session?.user?.id ?? null,
       id: `session-${++nextRecordId.current}`,
       date: localDate.toISOString().slice(0, 16),
     }
@@ -253,7 +260,10 @@ function App() {
         <>
           <MyPage
             preview={!session}
-            records={records}
+            key={session?.user?.id ?? 'guest'}
+            records={session?.user?.id
+              ? records.filter((record) => record.userId === session.user.id)
+              : []}
             onOpenRecord={openRecord}
             onDeleteRecord={(id) => setRecords((previous) => previous.filter((record) => record.id !== id))}
           />
