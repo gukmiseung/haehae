@@ -152,7 +152,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
           </div>
           <div className="sg-latest-detail-back-wrap">
             <button type="button" className="sg-latest-detail-back" onClick={backToList}>
-              ← 공식 사기 예방 정보 목록으로
+              ← 사기 예방 정보 게시판 목록으로
             </button>
           </div>
         </div>
@@ -169,7 +169,7 @@ function LatestScamGuide({ onNavigate, initialScamId }) {
       <section className="sg-latest-hero">
         <div className="sg-latest-container">
           <span className="sg-latest-eyebrow">SCAM PREVENTION GUIDE</span>
-          <h1 ref={listTitle} tabIndex={-1}>공식 사기 예방 정보</h1>
+          <h1 ref={listTitle} tabIndex={-1}>사기 예방 정보 게시판</h1>
           <p>KISA 보호나라의 피싱·스미싱 등 사기 예방 관련 보안공지를 확인하세요.</p>
         </div>
       </section>
