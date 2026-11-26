@@ -1,29 +1,6 @@
 import { useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
 import './ScamPopup.css'
-
-const scams = [
-  {
-    category: '최신 사기수법 안내',
-    title: '택배 배송 문자 사칭 주의',
-    description:
-      '배송 주소 오류를 핑계로 문자 속 링크를 누르도록 유도하는 사기 수법입니다.',
-    warning: '출처가 불분명한 링크 · 개인정보 입력 요구',
-  },
-  {
-    category: '최신 사기수법 안내',
-    title: '금융기관 사칭 전화 주의',
-    description:
-      '금융기관 직원을 사칭해 계좌 이상을 이유로 송금이나 개인정보를 요구하는 수법입니다.',
-    warning: '안전 계좌 안내 · 비밀번호 및 인증번호 요구',
-  },
-  {
-    category: '최신 사기수법 안내',
-    title: '중고거래 안전결제 사칭 주의',
-    description:
-      '안전결제를 핑계로 플랫폼 외부의 가짜 결제 사이트 접속을 유도하는 수법입니다.',
-    warning: '외부 결제 링크 · 별도 계좌 입금 요구',
-  },
-]
 
 const STORAGE_KEY = 'safeGuardScamPopupHiddenDate'
 
@@ -36,22 +13,73 @@ function getToday() {
   return `${year}-${month}-${day}`
 }
 
+function PopupSummary({ post }) {
+  const [excerpt, setExcerpt] = useState('')
+  useEffect(() => {
+    if (post.summary) return
+    const id = new URL(post.source_url).searchParams.get('nttId')
+    if (!id) return
+    const controller = new AbortController()
+    async function load() {
+      try {
+        const response = await fetch('/api/kisa-summary?id=' + encodeURIComponent(id), { signal: controller.signal })
+        if (!response.ok) return
+        const data = await response.json()
+        if (!controller.signal.aborted) setExcerpt(data.lines?.[0] || '')
+      } catch {
+        // The detail button remains available when the excerpt cannot be loaded.
+      }
+    }
+    void load()
+    return () => controller.abort()
+  }, [post.summary, post.source_url])
+  return <p>{post.summary || excerpt || '아래 버튼에서 KISA 공지 내용을 확인하세요.'}</p>
+}
+
 function ScamPopup({ onNavigate }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [scams, setScams] = useState([])
+  const [isOpen, setIsOpen] = useState(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY) !== getToday()
+    } catch {
+      return true
+    }
+  })
   const [currentIndex, setCurrentIndex] = useState(0)
   const [hideToday, setHideToday] = useState(false)
 
   useEffect(() => {
-    try {
-      const hiddenDate = localStorage.getItem(STORAGE_KEY)
-
-      if (hiddenDate !== getToday()) {
-        setIsOpen(true)
+    if (!isOpen || !supabase) return
+    const controller = new AbortController()
+    let pending = false
+    async function refresh() {
+      if (pending || document.hidden) return
+      pending = true
+      try {
+        const { data, error } = await supabase.from('security_posts')
+          .select('id,title,category,summary,source_url,published_at')
+          .order('published_at', { ascending: false, nullsFirst: false })
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .limit(3)
+          .abortSignal(controller.signal)
+        if (!error && !controller.signal.aborted) {
+          setScams(data)
+          setCurrentIndex(index => Math.max(0, Math.min(index, data.length - 1)))
+        }
+      } finally {
+        pending = false
       }
-    } catch {
-      setIsOpen(true)
     }
-  }, [])
+    void refresh()
+    const interval = setInterval(refresh, 60_000)
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      controller.abort()
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [isOpen])
 
   const closePopup = () => {
     if (hideToday) {
@@ -73,10 +101,10 @@ function ScamPopup({ onNavigate }) {
 
   const handleDetailClick = () => {
     setIsOpen(false)
-    onNavigate('latestScams')
+    onNavigate('latestScams', { scamId: currentScam.id })
   }
 
-  if (!isOpen) return null
+  if (!isOpen || !scams.length) return null
 
   const currentScam = scams[currentIndex]
 
@@ -96,7 +124,7 @@ function ScamPopup({ onNavigate }) {
         aria-labelledby="sg-scam-popup-title"
       >
         <header className="sg-scam-popup-header">
-          <span>{currentScam.category}</span>
+          <span>최신 사기수법 안내</span>
 
           <button
             type="button"
@@ -126,15 +154,15 @@ function ScamPopup({ onNavigate }) {
 
         <div className="sg-scam-popup-intro">
           <h2 id="sg-scam-popup-title">{currentScam.title}</h2>
-          <p>{currentScam.description}</p>
+          <p>{[currentScam.category, 'KISA', currentScam.published_at?.slice(0, 10)].filter(Boolean).join(' · ')}</p>
         </div>
 
         <div className="sg-scam-popup-warning">
           <strong>
             <span aria-hidden="true">!</span>
-            이런 신호를 조심하세요
+            공지 요약
           </strong>
-          <p>{currentScam.warning}</p>
+          <PopupSummary key={currentScam.id} post={currentScam} />
         </div>
 
         <div className="sg-scam-popup-slider">
@@ -149,7 +177,7 @@ function ScamPopup({ onNavigate }) {
           <div className="sg-scam-popup-dots">
             {scams.map((scam, index) => (
               <button
-                key={scam.title}
+                key={scam.id}
                 type="button"
                 className={index === currentIndex ? 'active' : ''}
                 onClick={() => setCurrentIndex(index)}
