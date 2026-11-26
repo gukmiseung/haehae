@@ -103,7 +103,7 @@ function Home({ onNavigate }) {
                 <span className="sg-home-card-icon" aria-hidden="true">
                   ✓
                 </span>
-                <h3>공식 사기 예방 정보</h3>
+                <h3>사기 예방 정보 게시판</h3>
               </div>
 
               <p>
