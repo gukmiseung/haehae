@@ -13,38 +13,31 @@ function getToday() {
   return `${year}-${month}-${day}`
 }
 
-function PopupSummary({ post }) {
-  const [excerpt, setExcerpt] = useState('')
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    if (post.summary) return
-    const id = new URL(post.source_url).searchParams.get('nttId')
-    if (!id) return
-    const controller = new AbortController()
-    const loadingTimeout = setTimeout(() => controller.abort(), 1000)
-    async function load() {
-      try {
-        const response = await fetch('/api/kisa-summary?id=' + encodeURIComponent(id), { signal: controller.signal })
-        if (!response.ok) return
-        const data = await response.json()
-        if (!controller.signal.aborted) setExcerpt(data.lines?.[0] || '')
-      } catch {
-        // The detail button remains available when the excerpt cannot be loaded.
-      } finally {
-        clearTimeout(loadingTimeout)
-        if (!controller.signal.aborted) setLoading(false)
-      }
-    }
-    void load()
-    return () => {
-      clearTimeout(loadingTimeout)
-      controller.abort()
-    }
-  }, [post.summary, post.source_url])
-  return <p>{post.summary || excerpt || (loading ? '요약을 불러오는 중…' : '요약을 불러오지 못했습니다.')}</p>
+const excerpts = new Map()
+const pendingExcerpts = new Map()
+
+function loadExcerpt(url) {
+  if (excerpts.has(url)) return Promise.resolve(excerpts.get(url))
+  if (pendingExcerpts.has(url)) return pendingExcerpts.get(url)
+  async function request() {
+    const id = new URL(url).searchParams.get('nttId')
+    if (!id) return ''
+    const response = await fetch('/api/kisa-summary?id=' + encodeURIComponent(id), {
+      signal: AbortSignal.timeout(12000),
+    })
+    if (!response.ok) return ''
+    const data = await response.json()
+    const excerpt = data.lines?.[0] || ''
+    if (excerpt) excerpts.set(url, excerpt)
+    return excerpt
+  }
+  const pending = request().catch(() => '').finally(() => pendingExcerpts.delete(url))
+  pendingExcerpts.set(url, pending)
+  return pending
 }
 
 function ScamPopup({ onNavigate }) {
+  const [summaries, setSummaries] = useState({})
   const [scams, setScams] = useState([])
   const [isOpen, setIsOpen] = useState(() => {
     try {
@@ -73,6 +66,14 @@ function ScamPopup({ onNavigate }) {
           .abortSignal(controller.signal)
         if (!error && !controller.signal.aborted) {
           setScams(data)
+          for (const post of data) {
+            if (post.summary) continue
+            void loadExcerpt(post.source_url).then(excerpt => {
+              if (excerpt && !controller.signal.aborted) {
+                setSummaries(previous => ({ ...previous, [post.source_url]: excerpt }))
+              }
+            })
+          }
           setCurrentIndex(index => Math.max(0, Math.min(index, data.length - 1)))
         }
       } finally {
@@ -170,7 +171,7 @@ function ScamPopup({ onNavigate }) {
             <span aria-hidden="true">!</span>
             공지 한 눈에 보기
           </strong>
-          <PopupSummary key={currentScam.id} post={currentScam} />
+          <p>{currentScam.summary || summaries[currentScam.source_url] || excerpts.get(currentScam.source_url) || currentScam.title}</p>
         </div>
 
         <div className="sg-scam-popup-slider">
