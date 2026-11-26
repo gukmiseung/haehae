@@ -2,15 +2,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './ScamPopup.css'
 
-const STORAGE_KEY = 'safeGuardScamPopupHiddenDate'
+const STORAGE_KEY = 'safeGuardScamPopupHiddenUntil'
 
-function getToday() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-
-  return `${year}-${month}-${day}`
+function getDismissalKey(userId) {
+  return userId ? `${STORAGE_KEY}:${userId}` : `${STORAGE_KEY}:guest`
 }
 
 const excerpts = new Map()
@@ -36,12 +31,12 @@ function loadExcerpt(url) {
   return pending
 }
 
-function ScamPopup({ onNavigate }) {
+function ScamPopup({ onNavigate, userId }) {
   const [summaries, setSummaries] = useState({})
   const [scams, setScams] = useState([])
   const [isOpen, setIsOpen] = useState(() => {
     try {
-      return localStorage.getItem(STORAGE_KEY) !== getToday()
+      return Number(localStorage.getItem(getDismissalKey(userId))) <= Date.now()
     } catch {
       return true
     }
@@ -93,7 +88,7 @@ function ScamPopup({ onNavigate }) {
   const closePopup = () => {
     if (hideToday) {
       try {
-        localStorage.setItem(STORAGE_KEY, getToday())
+        localStorage.setItem(getDismissalKey(userId), String(Date.now() + 24 * 60 * 60 * 1000))
       } catch {
         // 브라우저 저장 기능을 사용할 수 없는 경우 팝업만 닫습니다.
       }

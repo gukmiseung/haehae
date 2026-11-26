@@ -250,7 +250,7 @@ function App() {
 
       <div hidden={isMyPage}>
         {content}
-        {page === 'home' && <ScamPopup onNavigate={navigate} />}
+        {page === 'home' && <ScamPopup onNavigate={navigate} userId={session?.user?.id} />}
       </div>
 
       {isMyPage && session === undefined && (
