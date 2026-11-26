@@ -218,6 +218,7 @@ function App() {
   } else if (page === 'guide') {
     content = (
       <SafetyGuide
+        record={activeRecord}
         onBack={() => navigate('result')}
       />
     )

@@ -33,12 +33,18 @@ const emergencySteps = [
   },
 ]
 
-function SafetyGuide({ onBack }) {
+function SafetyGuide({ record, onBack }) {
   const [checkedItems, setCheckedItems] = useState([])
   const [copied, setCopied] = useState(false)
 
-  const recommendedReply =
-    '안전 확인을 위해 해당 기관의 공식 대표번호로 직접 문의한 뒤 진행하겠습니다.'
+  const result = record?.analysisData?.result
+  const recommendedReply = record?.isExample
+    ? '안전 확인을 위해 해당 기관의 공식 대표번호로 직접 문의한 뒤 진행하겠습니다.'
+    : result?.recommendedReply
+  const hasReply = typeof recommendedReply === 'string' && recommendedReply.trim().length > 0
+  const noReplyMessage = result?.riskLevel === 'insufficient'
+    ? '대화 내용이 부족해 답장을 추천하기 어려워요.'
+    : '이 분석 결과에는 추천 답장이 없어요. 분석 결과의 대응 안내를 확인해 주세요.'
 
   function toggleCheck(index) {
     setCheckedItems((previous) =>
@@ -70,31 +76,26 @@ function SafetyGuide({ onBack }) {
         <div className="safety-guide-top-grid">
           <section className="ai-analysis-card safety-reply-card">
             <span className="safety-guide-tag">
-              AI 답장 추천 예시
+              {record?.isExample ? '답장 예시' : 'AI 답장 추천'}
             </span>
 
-            <h2>상대방에게 이렇게 답해 보세요.</h2>
+            {hasReply ? (
+              <>
+                <h2>상대방에게 이렇게 답해 보세요.</h2>
 
-            <div className="safety-reply-message">
-              “{recommendedReply}”
-            </div>
+                <div className="safety-reply-message">“{recommendedReply}”</div>
 
-            <p className="safety-guide-helper">
-              답장을 보내기 전 상대방의 신원과 거래 내용을
-              별도로 확인하세요.
-            </p>
+                <p className="safety-guide-helper">
+                  답장을 보내기 전 상대방의 신원과 거래 내용을 별도로 확인하세요.
+                </p>
 
-            <button
-              type="button"
-              className="safety-primary-button"
-              onClick={handleCopy}
-            >
-              {copied ? '답장 복사 완료' : '답장 문구 복사하기'}
-            </button>
-
-            <p className="safety-guide-demo">
-              * 현재는 AI 생성 답장이 아닌 예시 문구입니다.
-            </p>
+                <button type="button" className="safety-primary-button" onClick={handleCopy}>
+                  {copied ? '답장 복사 완료' : '답장 문구 복사하기'}
+                </button>
+              </>
+            ) : (
+              <p>{noReplyMessage}</p>
+            )}
           </section>
 
           <section className="ai-analysis-card safety-check-card">

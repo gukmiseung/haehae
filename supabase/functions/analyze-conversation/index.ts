@@ -9,6 +9,7 @@ declare const Deno: {
 const MAX_TEXT_LENGTH = 12_000
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024
 const MAX_BODY_BYTES = 4 * Math.ceil(MAX_IMAGE_BYTES / 3) + 80_000
+const MAX_REPLY_LENGTH = 200
 const RISK_LEVELS = ['high', 'caution', 'low', 'insufficient']
 
 const headers = {
@@ -57,15 +58,21 @@ const instructions = [
   'low는 현재 입력에서 뚜렷한 위험 신호가 발견되지 않았다는 의미이지 거래의 안전을 보장한다는 의미가 아닙니다.',
   'recommendation에는 상황에 맞는 예방 행동을 한두 문장으로 제시하세요.',
   '어떤 결과 항목에도 이름, 전화번호, 계좌번호, 링크, 인증번호 등 개인정보를 재현하거나 새로 제시하지 마세요.',
+
+  `recommendedReply에는 상대방의 실제 요청과 관계에 맞춰 사용자가 보낼 수 있는 자연스러운 한국어 답장 한두 문장을 ${MAX_REPLY_LENGTH}자 이내로 작성하세요. 설명, 제목, 따옴표는 붙이지 마세요.`,
+  '예를 들어 가족을 사칭해 송금을 요구하면 기존 연락처로 확인하겠다고 답하고, 중고 거래에서 외부 결제를 요구하면 거래 앱 안에서만 결제하겠다고 답하세요. 대화에 없는 상황을 지어내거나 송금, 링크 접속, 개인정보 제공을 약속하지 마세요.',
+  '판단 자료가 부족하거나 답장 없이 차단·신고하는 편이 안전한 상황이면 recommendedReply를 null로 반환하세요.',
+  '답장에는 실명, 주소, 이메일 등 개인을 식별할 수 있는 정보도 포함하지 마세요.',
 ].join('\n')
 
 const responseSchema = {
   type: 'object',
-  required: ['riskLevel', 'summary', 'signals', 'recommendation'],
+  required: ['riskLevel', 'summary', 'signals', 'recommendation', 'recommendedReply'],
   properties: {
     riskLevel: { type: 'string', enum: RISK_LEVELS },
     summary: { type: 'string' },
     recommendation: { type: 'string' },
+    recommendedReply: { type: ['string', 'null'] },
     signals: {
       type: 'array',
       maxItems: 6,
@@ -125,6 +132,13 @@ async function readInput(request: Request) {
 
 function isShortText(value: unknown, max: number): value is string {
   return typeof value === 'string' && value.trim().length > 0 && value.length <= max
+}
+
+function validateReply(value: unknown): string | null {
+  if (!isShortText(value, MAX_REPLY_LENGTH)) return null
+
+  const hasLinkOrNumber = /https?:\/\/|\b[a-z0-9-]+\.[a-z]{2,}\b|\d(?:[-.\s]?\d){3,}/i.test(value)
+  return hasLinkOrNumber ? null : value.trim()
 }
 
 function isAnalysis(value: any) {
@@ -225,7 +239,8 @@ Deno.serve(async (request: Request) => {
     const result = JSON.parse(output ?? '')
     if (!isAnalysis(result)) return json({ code: 'ANALYSIS_INCOMPLETE' }, 422)
 
-    return json(result)
+    const recommendedReply = result.riskLevel === 'insufficient' ? null : validateReply(result.recommendedReply)
+    return json({ ...result, recommendedReply })
   } catch (error) {
     if (error instanceof SyntaxError) return json({ code: 'ANALYSIS_INCOMPLETE' }, 422)
     console.error('Conversation analysis failed', error instanceof Error ? error.name : 'UnknownError')
