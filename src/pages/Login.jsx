@@ -46,7 +46,7 @@ function Login({ onNavigate }) {
     <main className="sg-login-page">
       <div className="sg-login-content">
         <div className="sg-login-brand">
-          <span className="sg-login-brand-icon">✓</span>
+          <img className="sg-login-brand-icon sg-brand-image" src="/favicon.svg" alt="" aria-hidden="true" />
           <strong>SAFE GUARD</strong>
         </div>
 

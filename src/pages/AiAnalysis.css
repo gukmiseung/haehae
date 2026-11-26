@@ -418,7 +418,7 @@
   animation: ai-loading-spin 1.2s linear infinite;
 }
 
-.ai-loading-visual svg {
+.ai-loading-visual img {
   width: 58px;
   height: 58px;
 }

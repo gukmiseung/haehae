@@ -68,7 +68,7 @@ function Signup({ onNavigate }) {
     <main className="sg-signup-page">
       <div className="sg-signup-content">
         <div className="sg-signup-brand">
-          <span className="sg-signup-brand-icon">✓</span>
+          <img className="sg-signup-brand-icon sg-brand-image" src="/favicon.svg" alt="" aria-hidden="true" />
           <strong>SAFE GUARD</strong>
         </div>
         <h2>처음이신가요?</h2>

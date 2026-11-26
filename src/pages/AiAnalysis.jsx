@@ -99,21 +99,7 @@ function AiAnalysis({ onNext }) {
         <section className="ai-loading-content" role="status" aria-live="polite">
           <div className="ai-loading-visual" aria-hidden="true">
             <div className="ai-loading-ring" />
-            <svg viewBox="0 0 64 64" fill="none">
-              <path
-                d="M32 6L53 15V30C53 43 44 53 32 58C20 53 11 43 11 30V15L32 6Z"
-                fill="#edf3ff"
-                stroke="#3269df"
-                strokeWidth="2.5"
-              />
-              <path
-                d="M22 32L29 39L43 24"
-                stroke="#3269df"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <img className="sg-brand-image" src="/favicon.svg" alt="" aria-hidden="true" />
           </div>
 
           <span className="ai-loading-label">AI CONVERSATION ANALYSIS</span>

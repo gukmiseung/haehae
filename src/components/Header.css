@@ -33,11 +33,9 @@
   place-items: center;
   width: 25px;
   height: 29px;
-  background: #5b68e7;
   color: #fff;
   font-size: 16px;
   font-weight: 800;
-  clip-path: polygon(50% 0, 94% 18%, 90% 70%, 50% 100%, 10% 70%, 6% 18%);
 }
 
 .sg-header-actions {
