@@ -22,13 +22,12 @@ function getPopupTitle(title) {
 function PopupSummary({ post }) {
   const [excerpt, setExcerpt] = useState('')
   const [loading, setLoading] = useState(true)
-  const [timedOut, setTimedOut] = useState(false)
   useEffect(() => {
     if (post.summary) return
     const id = new URL(post.source_url).searchParams.get('nttId')
     if (!id) return
     const controller = new AbortController()
-    const loadingTimeout = setTimeout(() => setTimedOut(true), 1200)
+    const loadingTimeout = setTimeout(() => controller.abort(), 1000)
     async function load() {
       try {
         const response = await fetch('/api/kisa-summary?id=' + encodeURIComponent(id), { signal: controller.signal })
@@ -48,7 +47,7 @@ function PopupSummary({ post }) {
       controller.abort()
     }
   }, [post.summary, post.source_url])
-  return <p>{post.summary || excerpt || (loading && !timedOut ? '불러오는 중입니다…' : '요약을 불러오지 못했습니다.')}</p>
+  return <p>{post.summary || excerpt || (loading ? '요약을 불러오는 중…' : '요약을 불러오지 못했습니다.')}</p>
 }
 
 function ScamPopup({ onNavigate }) {
