@@ -123,6 +123,12 @@ function App() {
       const { error } = await supabase.auth.signOut({ scope: 'local' })
       if (error) throw error
       setSession(null)
+      try {
+        localStorage.removeItem('safeGuardScamPopupHiddenDate')
+        localStorage.removeItem('safeGuardScamPopupHiddenUntil')
+      } catch {
+        // 로그아웃을 계속 진행합니다.
+      }
       setRecords([])
       setActiveRecord(null)
       setViewingHistory(false)
@@ -250,7 +256,7 @@ function App() {
 
       <div hidden={isMyPage}>
         {content}
-        {page === 'home' && <ScamPopup onNavigate={navigate} userId={session?.user?.id} />}
+        {page === 'home' && <ScamPopup onNavigate={navigate} />}
       </div>
 
       {isMyPage && session === undefined && (
