@@ -382,3 +382,130 @@
   margin: 10px 0 0;
   color: #a73333;
 }
+
+
+/* AI 대화 분석 로딩 화면 */
+
+.ai-loading-page {
+  min-height: 72vh;
+  display: grid;
+  place-items: center;
+  padding: 64px 20px;
+  box-sizing: border-box;
+}
+
+.ai-loading-content {
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+}
+
+.ai-loading-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 116px;
+  height: 116px;
+  margin: 0 auto 32px;
+}
+
+.ai-loading-ring {
+  position: absolute;
+  inset: 0;
+  border: 4px solid #e8effc;
+  border-top-color: #3269df;
+  border-radius: 50%;
+  animation: ai-loading-spin 1.2s linear infinite;
+}
+
+.ai-loading-visual svg {
+  width: 58px;
+  height: 58px;
+}
+
+.ai-loading-label {
+  display: block;
+  margin-bottom: 12px;
+  color: #3269df;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.ai-loading-content h1 {
+  margin: 0 0 14px;
+  color: #243858;
+  font-size: clamp(22px, 5vw, 28px);
+  letter-spacing: -0.8px;
+}
+
+.ai-loading-content > p {
+  margin: 0;
+  color: #7a879b;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.ai-loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin: 26px 0;
+}
+
+.ai-loading-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3269df;
+  animation: ai-loading-pulse 1.4s ease-in-out infinite;
+}
+
+.ai-loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.ai-loading-notice {
+  padding: 20px 16px;
+  border: 1px solid #e5eaf2;
+  border-radius: 12px;
+  background: #f5f8ff;
+}
+
+.ai-loading-notice strong {
+  color: #243858;
+  font-size: 13px;
+}
+
+.ai-loading-notice p {
+  margin: 8px 0 0;
+  color: #7a879b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@keyframes ai-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ai-loading-pulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-loading-ring,
+  .ai-loading-dots span {
+    animation: none;
+  }
+}

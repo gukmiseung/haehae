@@ -93,6 +93,52 @@ function AiAnalysis({ onNext }) {
     }
   }
 
+  if (isAnalyzing) {
+    return (
+      <main className="ai-analysis ai-loading-page">
+        <section className="ai-loading-content" role="status" aria-live="polite">
+          <div className="ai-loading-visual" aria-hidden="true">
+            <div className="ai-loading-ring" />
+            <svg viewBox="0 0 64 64" fill="none">
+              <path
+                d="M32 6L53 15V30C53 43 44 53 32 58C20 53 11 43 11 30V15L32 6Z"
+                fill="#edf3ff"
+                stroke="#3269df"
+                strokeWidth="2.5"
+              />
+              <path
+                d="M22 32L29 39L43 24"
+                stroke="#3269df"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+
+          <span className="ai-loading-label">AI CONVERSATION ANALYSIS</span>
+
+          <h1>AI가 대화를 분석하고 있어요</h1>
+
+          <p>
+            대화의 맥락과 사기 위험 신호를 확인하고 있습니다.
+          </p>
+
+          <div className="ai-loading-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <div className="ai-loading-notice">
+            <strong>잠시만 기다려 주세요.</strong>
+            <p>분석이 완료되면 결과 화면으로 자동 이동합니다.</p>
+          </div>
+        </section>
+      </main>
+    )
+  }
+
   return (
     <main className="ai-analysis">
       <div className="ai-analysis-container">
