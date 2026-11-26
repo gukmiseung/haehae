@@ -13,12 +13,6 @@ function getToday() {
   return `${year}-${month}-${day}`
 }
 
-function getPopupTitle(title) {
-  const maxLength = 32
-  if (title.length <= maxLength) return title
-  return `${title.slice(0, maxLength).trimEnd()}…`
-}
-
 function PopupSummary({ post }) {
   const [excerpt, setExcerpt] = useState('')
   const [loading, setLoading] = useState(true)
@@ -167,7 +161,7 @@ function ScamPopup({ onNavigate }) {
         </div>
 
         <div className="sg-scam-popup-intro">
-          <h2 id="sg-scam-popup-title">{getPopupTitle(currentScam.title)}</h2>
+          <h2 id="sg-scam-popup-title">{currentScam.title}</h2>
           <p>{[currentScam.category, 'KISA', currentScam.published_at?.slice(0, 10)].filter(Boolean).join(' · ')}</p>
         </div>
 

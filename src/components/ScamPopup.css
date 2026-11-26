@@ -84,15 +84,14 @@
 
 .sg-scam-popup-intro h2 {
   max-width: 82%;
-  margin-right: auto;
-  margin-left: auto;
-  margin: 0 0 11px;
+  margin: 0 auto 11px;
   color: #263d61;
   font-size: 25px;
   font-weight: 800;
   letter-spacing: -0.7px;
   line-height: 1.4;
-  overflow-wrap: anywhere;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .sg-scam-popup-intro p {
