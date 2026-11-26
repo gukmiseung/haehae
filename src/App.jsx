@@ -131,7 +131,6 @@ function App() {
       } catch {
         // 로그아웃을 계속 진행합니다.
       }
-      setRecords([])
       setActiveRecord(null)
       setViewingHistory(false)
       navigate('home')
