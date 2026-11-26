@@ -22,7 +22,7 @@ export default function KisaSummary({ post }) {
   const paragraphs = post.summary ? [post.summary] : lines
   if (!paragraphs.length) return null
   return <section className="sg-latest-detail-panel">
-    <h2>{post.summary ? '핵심 요약' : '핵심 요약 · 원문 발췌'}</h2>
+    <h2>{'원문 한 눈에 보기'}</h2>
     {paragraphs.map(text => <p key={text}>{text}</p>)}
   </section>
 }
