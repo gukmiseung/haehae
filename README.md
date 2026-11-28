@@ -81,47 +81,7 @@ SAFE GUARD는 AI 기반 대화 분석과 공식 보안 정보를 통해 이러�
 
 Supabase를 활용하여 사용자 인증 및 보안공지 데이터를 관리하며, Vercel을 통해 웹 서비스를 배포합니다.
 
-## 5. 프로젝트 실행 방법
-
-### 저장소 복제
-
-```bash
-git clone https://github.com/gukmiseung/haehae.git
-cd haehae
-```
-
-### 패키지 설치
-
-```bash
-npm ci
-```
-
-### 환경 변수 설정
-
-프로젝트 루트 디렉터리에 `.env.local` 파일을 생성합니다.
-
-```env
-VITE_SUPABASE_URL=YOUR_SUPABASE_URL
-VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_SUPABASE_PUBLISHABLE_KEY
-```
-
-Gemini API 키 등 서버 측 비밀 키는 Supabase 환경 변수에서 별도로 관리합니다.
-
-비밀번호 재설정 메일은 `https://haehae.vercel.app/`로 돌아옵니다. Supabase Auth의 Redirect URLs에 끝의 `/`를 포함한 공개 주소를 등록합니다. 일반 가입자에게 메일을 보내려면 [Custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)를 설정합니다.
-
-### 개발 서버 실행
-
-```bash
-npm run dev
-```
-
-### 프로덕션 빌드
-
-```bash
-npm run build
-```
-
-## 6. 프로젝트 디렉터리 구조
+## 5. 프로젝트 디렉터리 구조
 
 ```text
 haehae/
@@ -149,14 +109,14 @@ haehae/
 └── README.md
 ```
 
-## 7. 기대 효과
+## 6. 기대 효과
 
 - AI를 활용한 사기 위험 신호 조기 탐지
 - 사용자의 디지털 금융 사기 대응 역량 향상
 - 공식 보안 정보에 대한 접근성 개선
 - 사기 피해 예방 및 안전한 디지털 거래 환경 조성
 
-## 8. 향후 개선 방향
+## 7. 향후 개선 방향
 
 - 실제 사기 피해 신고 데이터 API 연동
 - 전화번호 및 계좌번호 위험 정보 직접 조회
@@ -165,7 +125,7 @@ haehae/
 - AI 분석 정확도 및 응답 속도 개선
 - 사용자 참여형 사기 피해 제보 기능
 
-## 9. 유의 사항
+## 8. 유의 사항
 
 SAFE GUARD의 AI 분석 결과는 사기 위험을 판단하기 위한 참고 정보이며, 실제 사기 여부를 확정하지 않습니다.
 
