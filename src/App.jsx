@@ -22,26 +22,15 @@ const pagePaths = {
   signup: '/signup',
   resetPassword: '/reset-password',
   mypage: '/mypage',
+  analysis: '/analysis',
+  risk: '/risk',
+  latestScams: '/scam-guide',
 }
 
 function getPageFromPath() {
   if (isPasswordRecoveryRedirect()) return 'resetPassword'
   const path = window.location.pathname.replace(/\/$/, '')
-  const matchedPage = Object.keys(pagePaths).find((page) => pagePaths[page] === path)
-  if (matchedPage) return matchedPage
-
-  if (!path) {
-    try {
-      const savedPage = sessionStorage.getItem('safeGuardCurrentPage')
-      if (['home', 'analysis', 'risk', 'latestScams'].includes(savedPage)) {
-        return savedPage
-      }
-    } catch {
-      // 저장소를 사용할 수 없으면 기본 화면을 표시합니다.
-    }
-  }
-
-  return 'home'
+  return Object.keys(pagePaths).find((page) => pagePaths[page] === path) || 'home'
 }
 
 function clearPasswordRecovery() {
@@ -70,27 +59,6 @@ function App() {
   const recoveringPassword = userId !== null && userId === recoveryUserId
   const currentRecord = activeRecord?.userId === userId ? activeRecord : null
 
-  // 새로고침 시 일반 서비스 페이지 유지
-  useEffect(() => {
-    if (isMyPage) return
-
-    try {
-      const refreshPage = {
-        home: 'home',
-        analysis: 'analysis',
-        result: 'analysis',
-        guide: 'analysis',
-        risk: 'risk',
-        lookupResult: 'risk',
-        riskResult: 'risk',
-        latestScams: 'latestScams',
-      }[page] || 'home'
-
-      sessionStorage.setItem('safeGuardCurrentPage', refreshPage)
-    } catch {
-      // 저장소 오류가 서비스 이용에 영향을 주지 않도록 합니다.
-    }
-  }, [page, isMyPage])
 
 
   useEffect(() => {
@@ -168,11 +136,16 @@ function App() {
     }
 
     const currentPathPage = getPageFromPath()
-    const nextPath = pagePaths[nextPage]
+    const nextPath = pagePaths[nextPage] || ({
+      result: pagePaths.analysis,
+      guide: pagePaths.analysis,
+      lookupResult: pagePaths.risk,
+      riskResult: pagePaths.risk,
+    })[nextPage]
 
     if (isMyPage && !session) {
       window.history.replaceState(null, '', nextPath || '/')
-    } else if (nextPath && nextPage !== currentPathPage) {
+    } else if (nextPath && nextPath !== window.location.pathname) {
       window.history.pushState(null, '', nextPath)
     } else if (!nextPath && currentPathPage !== 'home') {
       window.history.pushState(null, '', '/')
